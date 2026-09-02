@@ -1,6 +1,24 @@
 pluginManagement { includeBuild("../node_modules/@react-native/gradle-plugin") }
 plugins { id("com.facebook.react.settings") }
-extensions.configure(com.facebook.react.ReactSettingsExtension){ ex -> ex.autolinkLibrariesFromCommand() }
+
+def findNode() {
+    def fromEnv = System.getenv("NODE_BINARY")
+    if (fromEnv && file(fromEnv).exists()) return fromEnv
+    def candidates = [
+        "/opt/homebrew/bin/node",
+        "/usr/local/bin/node",
+        "/usr/bin/node"
+    ]
+    return candidates.find { file(it).exists() } ?: "node"
+}
+
+def cliPath = new File(rootDir, "../node_modules/@react-native-community/cli/build/bin.js").canonicalPath
+
+extensions.configure(com.facebook.react.ReactSettingsExtension) { ex ->
+    ex.autolinkLibrariesFromCommand([findNode(), cliPath, "config"])
+}
+
 rootProject.name = 'PerfChat'
 include ':app'
 includeBuild('../node_modules/@react-native/gradle-plugin')
+

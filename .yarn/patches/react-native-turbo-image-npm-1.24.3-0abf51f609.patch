@@ -1,0 +1,781 @@
+diff --git a/Package.swift b/Package.swift
+new file mode 100644
+index 0000000000000000000000000000000000000000..4ac7528fbe244a22b971d460fb1f3fab229110e9
+--- /dev/null
++++ b/Package.swift
+@@ -0,0 +1,45 @@
++// swift-tools-version: 5.9
++import PackageDescription
++
++let package = Package(
++  name: "ReactNativeTurboImage",
++  platforms: [.iOS(.v15)],
++  products: [
++    .library(name: "ReactNativeTurboImage", targets: ["ReactNativeTurboImage", "ReactNativeTurboImageBridge"]),
++  ],
++  dependencies: [
++    .package(url: "https://github.com/kean/Nuke.git", exact: "12.8.0"),
++    .package(name: "ReactNative", path: "../../ios/build/xcframeworks"),
++  ],
++  targets: [
++    .target(
++      name: "ReactNativeTurboImage",
++      dependencies: [
++        .product(name: "Nuke", package: "Nuke"),
++        .product(name: "NukeUI", package: "Nuke"),
++        .product(name: "ReactHeaders", package: "ReactNative"),
++      ],
++      path: "ios",
++      exclude: ["TurboImageViewManager.m", "react-native-spm-prefix.h"],
++      publicHeadersPath: nil,
++      cSettings: [
++        .headerSearchPath("."),
++        .unsafeFlags(["-include", "react-native-spm-prefix.h"]),
++      ]
++    ),
++    .target(
++      name: "ReactNativeTurboImageBridge",
++      dependencies: [
++        "ReactNativeTurboImage",
++        .product(name: "ReactHeaders", package: "ReactNative"),
++      ],
++      path: "ios",
++      sources: ["TurboImageViewManager.m"],
++      publicHeadersPath: ".",
++      cSettings: [
++        .headerSearchPath("."),
++        .unsafeFlags(["-include", "react-native-spm-prefix.h"]),
++      ]
++    ),
++  ]
++)
+diff --git a/android/src/main/java/com/turboimage/TurboImageViewManager.kt b/android/src/main/java/com/turboimage/TurboImageViewManager.kt
+index 5531faa275bdac2b96989bb558711959cf973977..b698361cbc3b8dc61bda03626e8fd98d030d11be 100644
+--- a/android/src/main/java/com/turboimage/TurboImageViewManager.kt
++++ b/android/src/main/java/com/turboimage/TurboImageViewManager.kt
+@@ -1,8 +1,10 @@
+ package com.turboimage
+ 
+ import android.graphics.drawable.BitmapDrawable
++import android.net.Uri
+ import android.os.Build.VERSION.SDK_INT
+ import android.widget.ImageView.ScaleType
++import android.util.Base64
+ import coil.Coil
+ import coil.decode.GifDecoder
+ import coil.decode.ImageDecoderDecoder
+@@ -103,7 +105,8 @@ class TurboImageViewManager : SimpleViewManager<TurboImageView>(), LifecycleEven
+ 
+     val imageLoader = sharedImageLoader(view, view.cachePolicy == "urlCache")
+ 
+-    view.load(view.uri, imageLoader) {
++    val svgData = if (view.format == "svg") decodeSvgDataUri(view.uri) else null
++    view.load(svgData ?: view.uri, imageLoader) {
+       view.headers?.let { headers(it) }
+       addHeader(ProgressInterceptor.VIEW_TAG_HEADER, view.id.toString())
+       view.cacheKey?.let {
+@@ -271,7 +274,7 @@ class TurboImageViewManager : SimpleViewManager<TurboImageView>(), LifecycleEven
+ 
+     private val sharedLoaders = ConcurrentHashMap<Boolean, ImageLoader>()
+ 
+-    private fun sharedImageLoader(
++  private fun sharedImageLoader(
+       view: TurboImageView,
+       respectCacheHeaders: Boolean
+     ): ImageLoader {
+@@ -285,6 +288,19 @@ class TurboImageViewManager : SimpleViewManager<TurboImageView>(), LifecycleEven
+       }
+     }
+ 
++    private fun decodeSvgDataUri(uri: String?): ByteArray? {
++      if (uri == null || !uri.startsWith("data:image/svg+xml")) return null
++      val comma = uri.indexOf(',')
++      if (comma < 0) return null
++      val metadata = uri.substring(0, comma)
++      val payload = uri.substring(comma + 1)
++      return if (metadata.contains(";base64")) {
++        Base64.decode(payload, Base64.DEFAULT)
++      } else {
++        Uri.decode(payload).toByteArray(Charsets.UTF_8)
++      }
++    }
++
+     private val RESIZE_MODE = mapOf(
+       "contain" to ScaleType.FIT_CENTER,
+       "cover" to ScaleType.CENTER_CROP,
+diff --git a/ios/CoreSVG.swift b/ios/CoreSVG.swift
+index ac7cf7fdcfa8bbadda375d0d9955cb7fa8d40cff..70fee20d1769637fb8b984b04a0075afa0708761 100644
+--- a/ios/CoreSVG.swift
++++ b/ios/CoreSVG.swift
+@@ -8,26 +8,29 @@ import UIKit
+ @objc
+ class CGSVGDocument: NSObject { }
+ 
+-var CGSVGDocumentRetain: (@convention(c) (CGSVGDocument?) -> Unmanaged<CGSVGDocument>?) = load("CGSVGDocumentRetain")
+-var CGSVGDocumentRelease: (@convention(c) (CGSVGDocument?) -> Void) = load("CGSVGDocumentRelease")
+-var CGSVGDocumentCreateFromData: (@convention(c) (CFData?, CFDictionary?) -> Unmanaged<CGSVGDocument>?) = load("CGSVGDocumentCreateFromData")
+-var CGContextDrawSVGDocument: (@convention(c) (CGContext?, CGSVGDocument?) -> Void) = load("CGContextDrawSVGDocument")
+-var CGSVGDocumentGetCanvasSize: (@convention(c) (CGSVGDocument?) -> CGSize) = load("CGSVGDocumentGetCanvasSize")
++nonisolated(unsafe) var CGSVGDocumentRetain: (@convention(c) (CGSVGDocument?) -> Unmanaged<CGSVGDocument>?)? = load("CGSVGDocumentRetain")
++nonisolated(unsafe) var CGSVGDocumentRelease: (@convention(c) (CGSVGDocument?) -> Void)? = load("CGSVGDocumentRelease")
++nonisolated(unsafe) var CGSVGDocumentCreateFromData: (@convention(c) (CFData?, CFDictionary?) -> Unmanaged<CGSVGDocument>?)? = load("CGSVGDocumentCreateFromData")
++nonisolated(unsafe) var CGContextDrawSVGDocument: (@convention(c) (CGContext?, CGSVGDocument?) -> Void)? = load("CGContextDrawSVGDocument")
++nonisolated(unsafe) var CGSVGDocumentGetCanvasSize: (@convention(c) (CGSVGDocument?) -> CGSize)? = load("CGSVGDocumentGetCanvasSize")
+ 
+-typealias ImageWithCGSVGDocument = @convention(c) (AnyObject, Selector, CGSVGDocument) -> UIImage
+-var ImageWithCGSVGDocumentSEL: Selector = NSSelectorFromString("_imageWithCGSVGDocument:")
++nonisolated(unsafe) let CoreSVG = dlopen("/System/Library/PrivateFrameworks/CoreSVG.framework/CoreSVG", RTLD_NOW)
+ 
+-let CoreSVG = dlopen("/System/Library/PrivateFrameworks/CoreSVG.framework/CoreSVG", RTLD_NOW)
+-
+-func load<T>(_ name: String) -> T {
+-    unsafeBitCast(dlsym(CoreSVG, name), to: T.self)
++func load<T>(_ name: String) -> T? {
++    guard let symbol = dlsym(CoreSVG, name) else { return nil }
++    return unsafeBitCast(symbol, to: T.self)
+ }
+ 
+ public class SVG {
++
++    deinit {
++        if let document {
++            CGSVGDocumentRelease?(document)
++        }
++    }
+     
+-    deinit { CGSVGDocumentRelease(document) }
+-    
+-    let document: CGSVGDocument
++    private let document: CGSVGDocument?
++    private let fallback: SimpleSVGRenderer?
+ 
+     public convenience init?(_ value: String) {
+         guard let data = value.data(using: .utf8) else { return nil }
+@@ -35,19 +38,32 @@ public class SVG {
+     }
+     
+     public init?(_ data: Data) {
+-        guard let document = CGSVGDocumentCreateFromData(data as CFData, nil)?.takeUnretainedValue() else { return nil }
+-        guard CGSVGDocumentGetCanvasSize(document) != .zero else { return nil }
+-        self.document = document
++        if let create = CGSVGDocumentCreateFromData,
++           let getCanvasSize = CGSVGDocumentGetCanvasSize,
++           let document = create(data as CFData, nil)?.takeUnretainedValue(),
++           getCanvasSize(document) != .zero {
++            self.document = document
++            self.fallback = nil
++        } else {
++            guard let fallback = SimpleSVGRenderer(data: data) else { return nil }
++            self.document = nil
++            self.fallback = fallback
++        }
+     }
+     
+     public var size: CGSize {
+-        CGSVGDocumentGetCanvasSize(document)
++        if let document, let getCanvasSize = CGSVGDocumentGetCanvasSize {
++            return getCanvasSize(document)
++        }
++        return fallback?.size ?? .zero
+     }
+     
+     public func image() -> UIImage? {
+-        let ImageWithCGSVGDocument = unsafeBitCast(UIImage.self.method(for: ImageWithCGSVGDocumentSEL), to: ImageWithCGSVGDocument.self)
+-        let image = ImageWithCGSVGDocument(UIImage.self, ImageWithCGSVGDocumentSEL, document)
+-        return image
++        guard size.width > 0, size.height > 0 else { return nil }
++        let renderer = UIGraphicsImageRenderer(size: size)
++        return renderer.image { context in
++            draw(in: context.cgContext)
++        }
+     }
+     
+     public func draw(in context: CGContext) {
+@@ -56,6 +72,11 @@ public class SVG {
+     
+     public func draw(in context: CGContext, size target: CGSize) {
+ 
++        if document == nil {
++            fallback?.draw(in: context, size: target)
++            return
++        }
++
+         var target = target
+         
+         let ratio = (
+@@ -92,6 +113,304 @@ public class SVG {
+         context.concatenate(transform.scale)
+         context.concatenate(transform.aspect)
+         
+-        CGContextDrawSVGDocument(context, document)
++        if let document {
++            CGContextDrawSVGDocument?(context, document)
++        }
++    }
++}
++
++private struct SimpleSVGRenderer {
++    let source: String
++    let root: [String: String]
++    let size: CGSize
++
++    init?(data: Data) {
++        guard let source = String(data: data, encoding: .utf8),
++              let rootMatch = source.range(of: #"<svg\b([^>]*)>"#, options: .regularExpression) else {
++            return nil
++        }
++        let rootText = String(source[rootMatch])
++        self.source = source
++        self.root = Self.attributes(in: rootText)
++
++        if let viewBox = root["viewBox"] {
++            let values = viewBox.split(whereSeparator: { $0 == " " || $0 == "," }).compactMap { Double($0) }
++            guard values.count == 4, values[2] > 0, values[3] > 0 else { return nil }
++            self.size = CGSize(width: values[2], height: values[3])
++        } else if let width = Double(root["width"] ?? ""), let height = Double(root["height"] ?? ""), width > 0, height > 0 {
++            self.size = CGSize(width: width, height: height)
++        } else {
++            return nil
++        }
++    }
++
++    func draw(in context: CGContext, size target: CGSize) {
++        let scale = min(target.width / size.width, target.height / size.height)
++        guard scale.isFinite, scale > 0 else { return }
++        let x = (target.width - size.width * scale) / 2
++        let y = (target.height - size.height * scale) / 2
++
++        context.saveGState()
++        context.translateBy(x: x, y: y)
++        context.scaleBy(x: scale, y: scale)
++        if let viewBox = root["viewBox"] {
++            let values = viewBox.split(whereSeparator: { $0 == " " || $0 == "," }).compactMap { Double($0) }
++            if values.count == 4 {
++                context.translateBy(x: -values[0], y: -values[1])
++            }
++        }
++
++        let inheritedFill = color(root["fill"])
++        let inheritedStroke = color(root["stroke"])
++        let strokeWidth = CGFloat(Double(root["stroke-width"] ?? "1") ?? 1)
++        let tagPattern = #"<(path|circle|rect)\b([^>]*)/?>"#
++        if let regex = try? NSRegularExpression(pattern: tagPattern) {
++            let range = NSRange(source.startIndex..., in: source)
++            regex.enumerateMatches(in: source, range: range) { match, _, _ in
++                guard let match,
++                      let kindRange = Range(match.range(at: 1), in: source),
++                      let attributesRange = Range(match.range(at: 2), in: source) else { return }
++                let attributes = Self.attributes(in: String(source[attributesRange]))
++                let fill = attributes["fill"].map(color) ?? inheritedFill
++                let stroke = attributes["stroke"].map(color) ?? inheritedStroke
++                let width = CGFloat(Double(attributes["stroke-width"] ?? "") ?? Double(strokeWidth))
++                let path: CGPath?
++
++                switch String(source[kindRange]) {
++                case "circle":
++                    guard let cx = number(attributes["cx"]), let cy = number(attributes["cy"]), let radius = number(attributes["r"]) else { return }
++                    path = CGPath(ellipseIn: CGRect(x: cx - radius, y: cy - radius, width: radius * 2, height: radius * 2), transform: nil)
++                case "rect":
++                    guard let width = number(attributes["width"]), let height = number(attributes["height"]) else { return }
++                    let rect = CGRect(x: number(attributes["x"]) ?? 0, y: number(attributes["y"]) ?? 0, width: width, height: height)
++                    let radius = number(attributes["rx"]) ?? number(attributes["ry"]) ?? 0
++                    path = UIBezierPath(roundedRect: rect, cornerRadius: radius).cgPath
++                case "path":
++                    guard let data = attributes["d"] else { return }
++                    path = SVGPathParser(data).path
++                default:
++                    path = nil
++                }
++
++                guard let path else { return }
++                context.addPath(path)
++                if let fill {
++                    context.setFillColor(fill.cgColor)
++                    context.fillPath(using: .winding)
++                }
++                if let stroke {
++                    context.addPath(path)
++                    context.setStrokeColor(stroke.cgColor)
++                    context.setLineWidth(width)
++                    context.setLineCap(.round)
++                    context.setLineJoin(.round)
++                    context.strokePath()
++                }
++            }
++        }
++        context.restoreGState()
++    }
++
++    private static func attributes(in text: String) -> [String: String] {
++        guard let regex = try? NSRegularExpression(pattern: #"([A-Za-z_:][-A-Za-z0-9_.:]*)\s*=\s*["']([^"']*)["']"#) else { return [:] }
++        let range = NSRange(text.startIndex..., in: text)
++        return regex.matches(in: text, range: range).reduce(into: [:]) { result, match in
++            guard let keyRange = Range(match.range(at: 1), in: text), let valueRange = Range(match.range(at: 2), in: text) else { return }
++            result[String(text[keyRange])] = String(text[valueRange])
++        }
++    }
++
++    private static func number(_ value: String?) -> CGFloat? {
++        guard let value, let number = Double(value.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "px", with: "")) else { return nil }
++        return CGFloat(number)
++    }
++
++    private func number(_ value: String?) -> CGFloat? { Self.number(value) }
++
++    private func color(_ value: String?) -> UIColor? {
++        guard let value, value != "none" else { return nil }
++        let hex = value.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: "#", with: "")
++        if hex.count == 3 {
++            let expanded = hex.map { "\($0)\($0)" }.joined()
++            return UIColor(hex: expanded)
++        }
++        if hex.count == 6 { return UIColor(hex: hex) }
++        switch value.lowercased() {
++        case "black": return .black
++        case "white": return .white
++        case "red": return .red
++        default: return nil
++        }
++    }
++}
++
++private extension UIColor {
++    convenience init?(hex: String) {
++        guard let value = UInt64(hex, radix: 16) else { return nil }
++        self.init(red: CGFloat((value >> 16) & 0xff) / 255, green: CGFloat((value >> 8) & 0xff) / 255, blue: CGFloat(value & 0xff) / 255, alpha: 1)
++    }
++}
++
++private struct SVGPathParser {
++    private let tokens: [String]
++    private var index = 0
++    private var command: Character?
++    private var current = CGPoint.zero
++    private var start = CGPoint.zero
++    private var lastCubicControl: CGPoint?
++    private var lastQuadraticControl: CGPoint?
++    var path: CGPath?
++
++    init(_ source: String) {
++        self.tokens = Self.tokenize(source)
++        self.path = nil
++        var parser = self
++        self.path = parser.parse()
++    }
++
++    private init(tokens: [String]) {
++        self.tokens = tokens
++        self.path = nil
++    }
++
++    private mutating func parse() -> CGPath? {
++        let path = CGMutablePath()
++        while index < tokens.count {
++            if let next = tokens[index].first, next.isLetter {
++                command = next
++                index += 1
++                if next == "Z" || next == "z" {
++                    path.closeSubpath()
++                    current = start
++                    command = nil
++                    continue
++                }
++            }
++            guard let activeCommand = command else { return path }
++            let relative = activeCommand.isLowercase
++            switch activeCommand.uppercased() {
++            case "M":
++                guard let point = point(relative: relative) else { return path }
++                path.move(to: point)
++                current = point
++                start = point
++                command = relative ? "l" : "L"
++                resetControls()
++            case "L":
++                guard let point = point(relative: relative) else { return path }
++                path.addLine(to: point)
++                current = point
++                resetControls()
++            case "H":
++                guard let x = number() else { return path }
++                current = CGPoint(x: relative ? current.x + x : x, y: current.y)
++                path.addLine(to: current)
++                resetControls()
++            case "V":
++                guard let y = number() else { return path }
++                current = CGPoint(x: current.x, y: relative ? current.y + y : y)
++                path.addLine(to: current)
++                resetControls()
++            case "C":
++                guard let c1 = point(relative: relative), let c2 = point(relative: relative), let point = point(relative: relative) else { return path }
++                path.addCurve(to: point, control1: c1, control2: c2)
++                current = point
++                lastCubicControl = c2
++                lastQuadraticControl = nil
++            case "S":
++                guard let c2 = point(relative: relative), let point = point(relative: relative) else { return path }
++                let c1 = lastCubicControl.map { CGPoint(x: current.x * 2 - $0.x, y: current.y * 2 - $0.y) } ?? current
++                path.addCurve(to: point, control1: c1, control2: c2)
++                current = point
++                lastCubicControl = c2
++                lastQuadraticControl = nil
++            case "Q":
++                guard let control = point(relative: relative), let point = point(relative: relative) else { return path }
++                path.addQuadCurve(to: point, control: control)
++                current = point
++                lastQuadraticControl = control
++                lastCubicControl = nil
++            case "T":
++                guard let point = point(relative: relative) else { return path }
++                let control = lastQuadraticControl.map { CGPoint(x: current.x * 2 - $0.x, y: current.y * 2 - $0.y) } ?? current
++                path.addQuadCurve(to: point, control: control)
++                current = point
++                lastQuadraticControl = control
++                lastCubicControl = nil
++            case "A":
++                guard let rx = number(), let ry = number(), let rotation = number(), let large = number(), let sweep = number(), let point = point(relative: relative) else { return path }
++                addArc(to: path, rx: rx, ry: ry, rotation: rotation, large: large != 0, sweep: sweep != 0, end: point)
++                current = point
++                resetControls()
++            default:
++                return path
++            }
++        }
++        return path
++    }
++
++    private mutating func point(relative: Bool) -> CGPoint? {
++        guard let x = number(), let y = number() else { return nil }
++        return CGPoint(x: relative ? current.x + x : x, y: relative ? current.y + y : y)
++    }
++
++    private mutating func number() -> CGFloat? {
++        guard index < tokens.count, let value = Double(tokens[index]) else { return nil }
++        index += 1
++        return CGFloat(value)
++    }
++
++    private mutating func resetControls() {
++        lastCubicControl = nil
++        lastQuadraticControl = nil
++    }
++
++    private mutating func addArc(to path: CGMutablePath, rx: CGFloat, ry: CGFloat, rotation: CGFloat, large: Bool, sweep: Bool, end: CGPoint) {
++        guard current != end else { return }
++        var rx = abs(rx), ry = abs(ry)
++        guard rx > 0, ry > 0 else { path.addLine(to: end); return }
++        let angle = rotation * .pi / 180
++        let cosAngle = cos(angle), sinAngle = sin(angle)
++        let dx = (current.x - end.x) / 2, dy = (current.y - end.y) / 2
++        let x1 = cosAngle * dx + sinAngle * dy, y1 = -sinAngle * dx + cosAngle * dy
++        let lambda = x1 * x1 / (rx * rx) + y1 * y1 / (ry * ry)
++        if lambda > 1 { let factor = sqrt(lambda); rx *= factor; ry *= factor }
++        let numerator = max(0, (rx * rx * ry * ry - rx * rx * y1 * y1 - ry * ry * x1 * x1) / (rx * rx * y1 * y1 + ry * ry * x1 * x1))
++        let factor = (large == sweep ? -1 : 1) * sqrt(numerator)
++        let cx1 = factor * rx * y1 / ry, cy1 = factor * -ry * x1 / rx
++        let cx = cosAngle * cx1 - sinAngle * cy1 + (current.x + end.x) / 2
++        let cy = sinAngle * cx1 + cosAngle * cy1 + (current.y + end.y) / 2
++        let startAngle = atan2((y1 - cy1) / ry, (x1 - cx1) / rx)
++        var delta = atan2((-y1 - cy1) / ry, (-x1 - cx1) / rx) - startAngle
++        if !sweep && delta > 0 { delta -= 2 * .pi }
++        if sweep && delta < 0 { delta += 2 * .pi }
++        let segments = max(1, Int(ceil(abs(delta) / (.pi / 2))))
++        let step = delta / CGFloat(segments)
++        for segment in 0..<segments {
++            let a0 = startAngle + CGFloat(segment) * step, a1 = a0 + step
++            let k = 4 / 3 * tan((a1 - a0) / 4)
++            let p0 = point(angle: a0, cx: cx, cy: cy, rx: rx, ry: ry, cosAngle: cosAngle, sinAngle: sinAngle)
++            let p1 = point(angle: a1, cx: cx, cy: cy, rx: rx, ry: ry, cosAngle: cosAngle, sinAngle: sinAngle)
++            let c1 = CGPoint(x: p0.x - k * derivative(angle: a0, rx: rx, ry: ry, cosAngle: cosAngle, sinAngle: sinAngle).x, y: p0.y - k * derivative(angle: a0, rx: rx, ry: ry, cosAngle: cosAngle, sinAngle: sinAngle).y)
++            let c2 = CGPoint(x: p1.x + k * derivative(angle: a1, rx: rx, ry: ry, cosAngle: cosAngle, sinAngle: sinAngle).x, y: p1.y + k * derivative(angle: a1, rx: rx, ry: ry, cosAngle: cosAngle, sinAngle: sinAngle).y)
++            path.addCurve(to: p1, control1: c1, control2: c2)
++        }
++    }
++
++    private func point(angle: CGFloat, cx: CGFloat, cy: CGFloat, rx: CGFloat, ry: CGFloat, cosAngle: CGFloat, sinAngle: CGFloat) -> CGPoint {
++        CGPoint(x: cx + rx * cosAngle * cos(angle) - ry * sinAngle * sin(angle), y: cy + rx * sinAngle * cos(angle) + ry * cosAngle * sin(angle))
++    }
++
++    private func derivative(angle: CGFloat, rx: CGFloat, ry: CGFloat, cosAngle: CGFloat, sinAngle: CGFloat) -> CGPoint {
++        CGPoint(x: -rx * cosAngle * sin(angle) - ry * sinAngle * cos(angle), y: -rx * sinAngle * sin(angle) + ry * cosAngle * cos(angle))
++    }
++
++    private static func tokenize(_ source: String) -> [String] {
++        guard let regex = try? NSRegularExpression(pattern: #"[A-Za-z]|[-+]?(?:\d*\.\d+|\d+\.?\d*)(?:[eE][-+]?[-]?\d+)?"#) else { return [] }
++        let range = NSRange(source.startIndex..., in: source)
++        return regex.matches(in: source, range: range).compactMap { match in
++            guard let range = Range(match.range, in: source) else { return nil }
++            return String(source[range])
++        }
+     }
+ }
+diff --git a/ios/Extensions/UIImage+BorderRadius.swift b/ios/Extensions/UIImage+BorderRadius.swift
+index 57a6c9ad30713ce781c0044fb27dc8a66b559d40..4929d8314ebc8da642dd99f61888d8efbab161c4 100644
+--- a/ios/Extensions/UIImage+BorderRadius.swift
++++ b/ios/Extensions/UIImage+BorderRadius.swift
+@@ -1,4 +1,5 @@
+ import Foundation
++import UIKit
+ 
+ public extension UIImage {
+   func with(_ borderRadius: CGFloat? = nil) -> UIImage? {
+diff --git a/ios/Extensions/UIImage+Thumbhash.swift b/ios/Extensions/UIImage+Thumbhash.swift
+index a6eb43f3c660c768868e96f674a452f383607ca3..bb283ae1fd6199b087bed8d113bf4fc5e7d31a10 100644
+--- a/ios/Extensions/UIImage+Thumbhash.swift
++++ b/ios/Extensions/UIImage+Thumbhash.swift
+@@ -1,4 +1,5 @@
+ import Foundation
++import UIKit
+ 
+ public extension UIImage {
+   convenience init?(thumbhash: String?) {
+@@ -236,4 +237,3 @@ private func thumbHashToApproximateAspectRatio(hash: Data) -> Float32 {
+   return Float32(lx) / Float32(ly)
+ }
+ 
+-
+diff --git a/ios/TurboImageView.swift b/ios/TurboImageView.swift
+index 731c0f0d9d0f006323471f9eeb8dbc708c412469..6b0905f04ef8b7f072b413043381416abdc5795c 100644
+--- a/ios/TurboImageView.swift
++++ b/ios/TurboImageView.swift
+@@ -1,11 +1,10 @@
+ import Nuke
+ import NukeUI
++import UIKit
+ #if !os(tvOS) && canImport(VisionKit)
+-import VisionKit
++@preconcurrency import VisionKit
+ #endif
+-import Gifu
+ import React
+-import APNGKit
+ 
+ @MainActor
+ final class TurboImageView : UIView {
+@@ -19,11 +18,14 @@ final class TurboImageView : UIView {
+     static let height = "height"
+     static let source = "source"
+     static let svg = "svg"
+-    static let gif = "gif"
+-    static let apng = "apng"
+   }
+   
+   private lazy var lazyImageView = LazyImageView()
++  private lazy var svgImageView: UIImageView = {
++    let imageView = UIImageView()
++    imageView.isHidden = true
++    return imageView
++  }()
+   private var processors: [ImageProcessing] {
+     return composeProcessors()
+   }
+@@ -42,13 +44,30 @@ final class TurboImageView : UIView {
+   
+   @objc var source: NSDictionary? {
+     didSet {
+-      guard let uri = source?.value(forKey: "uri") as? String,
+-            let url = URL(string: uri) else {
++      guard let uri = source?.value(forKey: "uri") as? String else {
+         onFailure?([
+           Constants.error: "invalid source: \(String(describing: source))"
+         ])
+         return
+       }
++      if uri.hasPrefix("data:image/svg+xml") {
++        guard let data = Self.svgData(from: uri), let image = SVG(data)?.image() else {
++          onFailure?([Constants.error: "invalid SVG source"])
++          return
++        }
++        imageRequest = nil
++        lazyImageView.isHidden = true
++        svgImageView.isHidden = false
++        svgImageView.contentMode = ResizeMode(rawValue: resizeMode)?.contentMode ?? .scaleAspectFit
++        svgImageView.image = image
++        return
++      }
++      svgImageView.isHidden = true
++      lazyImageView.isHidden = false
++      guard let url = URL(string: uri) else {
++        onFailure?([Constants.error: "invalid source: \(uri)"])
++        return
++      }
+       var urlRequest = URLRequest(url: url)
+       if let headers = source?.value(forKey: "headers") as? [String:String] {
+         urlRequest.allHTTPHeaderFields = headers
+@@ -148,33 +167,36 @@ final class TurboImageView : UIView {
+     }
+   }
+   
+-  @objc var format: NSString? {
+-    didSet {
+-      guard let format = format as? String else { return }
+-      if format == Constants.svg {
+-        handleSvg()
+-      }
+-      if format == Constants.gif {
+-        handleGif()
+-      }
+-      if format == Constants.apng {
+-        handleAPNG()
+-      }
+-    }
++  @objc var format: NSString?
++
++  private static func svgData(from uri: String) -> Data? {
++    guard let separator = uri.firstIndex(of: ",") else { return nil }
++    let metadata = String(uri[..<separator])
++    let payload = String(uri[uri.index(after: separator)...])
++    if metadata.contains(";base64") {
++      return Data(base64Encoded: payload)
++    }
++    return payload.removingPercentEncoding?.data(using: .utf8)
+   }
+   
+   override init(frame: CGRect) {
+     super.init(frame: frame)
+     addSubview(lazyImageView)
++    addSubview(svgImageView)
+     // Clear the default NukeUI placeholder (has secondarySystemBackground color)
+     lazyImageView.placeholderView = nil
+     layer.masksToBounds = true
+     lazyImageView.translatesAutoresizingMaskIntoConstraints = false
++    svgImageView.translatesAutoresizingMaskIntoConstraints = false
+     NSLayoutConstraint.activate([
+       lazyImageView.topAnchor.constraint(equalTo: topAnchor),
+       lazyImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
+       lazyImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
+       lazyImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
++      svgImageView.topAnchor.constraint(equalTo: topAnchor),
++      svgImageView.bottomAnchor.constraint(equalTo: bottomAnchor),
++      svgImageView.leadingAnchor.constraint(equalTo: leadingAnchor),
++      svgImageView.trailingAnchor.constraint(equalTo: trailingAnchor),
+     ])
+     NotificationCenter.default.addObserver(self,
+                                            selector: #selector(cancelRequest),
+@@ -244,78 +266,6 @@ fileprivate extension TurboImageView {
+   }
+ }
+ 
+-// MARK: - other formats
+-fileprivate extension TurboImageView {
+-  
+-  func handleSvg() {
+-    struct Static {
+-      static var didRegister = false
+-    }
+-    if !Static.didRegister {
+-      ImageDecoderRegistry.shared.register { context in
+-        let svgTagEnd = "</svg>"
+-        if let _ = context.data.range(of: Data(svgTagEnd.utf8), options: .backwards) {
+-          return ImageDecoders.Empty()
+-        } else {
+-          return nil
+-        }
+-      }
+-      Static.didRegister = true
+-    }
+-    
+-    lazyImageView.makeImageView = { container in
+-      if let data = container.data,
+-         let svg = SVG(data) {
+-        let image = svg.image()
+-        let view = UIImageView(image: image)
+-        return view
+-      }
+-      return nil
+-    }
+-  }
+-  
+-  func handleGif() {
+-    lazyImageView.makeImageView = { [weak self] container in
+-      guard let self else { return nil }
+-      if container.type == .gif,
+-         let data = container.data {
+-        let view = GIFImageView()
+-        view.contentMode = ResizeMode(rawValue: self.resizeMode)?.contentMode ?? .scaleToFill
+-        view.animate(withGIFData: data)
+-        return view
+-      }
+-      return nil
+-    }
+-  }
+-  
+-  func handleAPNG() {
+-    struct Static {
+-      static var didRegister = false
+-    }
+-    if !Static.didRegister {
+-      ImageDecoderRegistry.shared.register { context in
+-        // Signature bytes for the acTL chunk in an APNG file
+-        let acTLSignature = Data([0x61, 0x63, 0x54, 0x4C])
+-        // Search for the acTL chunk signature in the data
+-        if let _ = context.data.range(of: acTLSignature) {
+-          return ImageDecoders.Empty()
+-        } else {
+-          return nil
+-        }
+-      }
+-      Static.didRegister = true
+-    }
+-    
+-    lazyImageView.makeImageView = { container in
+-      guard let data = container.data else { return nil }
+-      let view = APNGImageView(frame: .zero)
+-      let image = try? APNGImage(data: data, decodingOptions: .fullFirstPass)
+-      view.image = image
+-      return view
+-    }
+-  }
+-  
+-}
+ // MARK: - processors
+ fileprivate extension TurboImageView {
+   
+diff --git a/ios/TurboImageViewManager.m b/ios/TurboImageViewManager.m
+index ed943e842c58f66c8372df456630ffb13b8cb7c9..ce3318efeb9488b28f27b655528880225885495d 100644
+--- a/ios/TurboImageViewManager.m
++++ b/ios/TurboImageViewManager.m
+@@ -1,3 +1,4 @@
++#import <Foundation/Foundation.h>
+ #import <React/RCTViewManager.h>
+ 
+ @interface RCT_EXTERN_MODULE(TurboImageViewManager, RCTViewManager)
+@@ -58,4 +59,3 @@ RCT_EXTERN_METHOD(clearDiskCache:(RCTPromiseResolveBlock)resolve
+                   reject:(RCTPromiseRejectBlock)reject)
+ 
+ @end
+-
+diff --git a/ios/TurboImageViewManager.swift b/ios/TurboImageViewManager.swift
+index a668ee5fd79d4b65e7a9231d8cb73daf47f56b17..871f8982488a8e6bc853f15317d5f4251a261e4e 100644
+--- a/ios/TurboImageViewManager.swift
++++ b/ios/TurboImageViewManager.swift
+@@ -1,12 +1,16 @@
++import Foundation
+ import Nuke
++import React
++import UIKit
+ 
+ @objc(TurboImageViewManager)
++@MainActor
+ class TurboImageViewManager: RCTViewManager {
+ 
+   private var prefetchers: [String: ImagePrefetcher] = [:]
+ 
+-  override func view() -> (TurboImageView) {
+-    return TurboImageView()
++  nonisolated override func view() -> TurboImageView {
++    MainActor.assumeIsolated { TurboImageView() }
+   }
+ 
+   @objc override static func requiresMainQueueSetup() -> Bool {
+diff --git a/ios/react-native-spm-prefix.h b/ios/react-native-spm-prefix.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..baebbb73fd696a182b883bced85a39f793633a2e
+--- /dev/null
++++ b/ios/react-native-spm-prefix.h
+@@ -0,0 +1,5 @@
++#import <React/RCTBridgeModule.h>
++#import <React/RCTComponent.h>
++#import <React/RCTConvert.h>
++#import <React/RCTEventDispatcherProtocol.h>
++#import <React/RCTViewManager.h>

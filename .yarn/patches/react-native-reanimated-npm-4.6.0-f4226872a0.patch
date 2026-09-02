@@ -1,0 +1,405 @@
+diff --git a/Package.swift b/Package.swift
+new file mode 100644
+index 0000000000000000000000000000000000000000..099508bdb2744cb2938fa521ff7dc17aecf9f151
+--- /dev/null
++++ b/Package.swift
+@@ -0,0 +1,323 @@
++// swift-tools-version: 6.0
++// AUTO-SCAFFOLDED by react-native spm scaffold — safe to edit & commit via patch-package.
++// AUTO-SCAFFOLDED-VERSION: 19
++// Cache slot: 0.87.1/dual-flavor
++// Edit the contents below if needed and re-run `npx patch-package <dep-name>`
++// to persist across `npm install`. To regenerate from the podspec, remove
++// this file (or just this marker) and re-run `npx react-native spm scaffold`.
++//
++// Package references are plain relative paths, computed when this file was
++// scaffolded. They stay correct because the file is re-scaffolded per app
++// and cache slot, and any node_modules relayout reinstalls this package
++// (dropping the file) anyway.
++
++import PackageDescription
++
++let package = Package(
++    name: "ReactNativeReanimated",
++    platforms: [.iOS(.v15)],
++    products: [
++        .library(name: "ReactNativeReanimated", targets: ["ReactNativeReanimated"]),
++    ],
++    dependencies: [
++        .package(name: "ReactNative", path: "../../../../xcframeworks"),
++        .package(name: "React-GeneratedCode", path: "../../../ios"),
++        .package(name: "ReactNativeWorklets", path: "../ReactNativeWorklets"),
++    ],
++    targets: [
++        .target(
++            name: "ReactNativeReanimated",
++            dependencies: [.product(name: "ReactHeaders", package: "ReactNative"), .product(name: "ReactNativeHeaders", package: "ReactNative"), .product(name: "ReactNativeDependenciesHeaders", package: "ReactNative"), .product(name: "ReactAppHeaders", package: "React-GeneratedCode"), .product(name: "ReactNativeWorklets", package: "ReactNativeWorklets")],
++            path: ".",
++            sources: [
++                "Common/NativeView/react/renderer/components/rnreanimated/ComponentDescriptors.h",
++                "Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryComponentDescriptor.h",
++                "Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryShadowNode.cpp",
++                "Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryShadowNode.h",
++                "Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryState.h",
++                "Common/cpp/reanimated/AnimatedSensor/AnimatedSensorModule.cpp",
++                "Common/cpp/reanimated/AnimatedSensor/AnimatedSensorModule.h",
++                "Common/cpp/reanimated/CSS/InterpolatorRegistry.cpp",
++                "Common/cpp/reanimated/CSS/InterpolatorRegistry.h",
++                "Common/cpp/reanimated/CSS/common/definitions.h",
++                "Common/cpp/reanimated/CSS/common/filters/FilterOp.cpp",
++                "Common/cpp/reanimated/CSS/common/filters/FilterOp.h",
++                "Common/cpp/reanimated/CSS/common/transforms/Quaternion.cpp",
++                "Common/cpp/reanimated/CSS/common/transforms/Quaternion.h",
++                "Common/cpp/reanimated/CSS/common/transforms/TransformMatrix.cpp",
++                "Common/cpp/reanimated/CSS/common/transforms/TransformMatrix.h",
++                "Common/cpp/reanimated/CSS/common/transforms/TransformMatrix2D.cpp",
++                "Common/cpp/reanimated/CSS/common/transforms/TransformMatrix2D.h",
++                "Common/cpp/reanimated/CSS/common/transforms/TransformMatrix3D.cpp",
++                "Common/cpp/reanimated/CSS/common/transforms/TransformMatrix3D.h",
++                "Common/cpp/reanimated/CSS/common/transforms/TransformOp.cpp",
++                "Common/cpp/reanimated/CSS/common/transforms/TransformOp.h",
++                "Common/cpp/reanimated/CSS/common/transforms/vectors.cpp",
++                "Common/cpp/reanimated/CSS/common/transforms/vectors.h",
++                "Common/cpp/reanimated/CSS/common/values/CSSAngle.cpp",
++                "Common/cpp/reanimated/CSS/common/values/CSSAngle.h",
++                "Common/cpp/reanimated/CSS/common/values/CSSBoolean.cpp",
++                "Common/cpp/reanimated/CSS/common/values/CSSBoolean.h",
++                "Common/cpp/reanimated/CSS/common/values/CSSColor.cpp",
++                "Common/cpp/reanimated/CSS/common/values/CSSColor.h",
++                "Common/cpp/reanimated/CSS/common/values/CSSDiscreteArray.cpp",
++                "Common/cpp/reanimated/CSS/common/values/CSSDiscreteArray.h",
++                "Common/cpp/reanimated/CSS/common/values/CSSKeyword.cpp",
++                "Common/cpp/reanimated/CSS/common/values/CSSKeyword.h",
++                "Common/cpp/reanimated/CSS/common/values/CSSLength.cpp",
++                "Common/cpp/reanimated/CSS/common/values/CSSLength.h",
++                "Common/cpp/reanimated/CSS/common/values/CSSNumber.cpp",
++                "Common/cpp/reanimated/CSS/common/values/CSSNumber.h",
++                "Common/cpp/reanimated/CSS/common/values/CSSValue.h",
++                "Common/cpp/reanimated/CSS/common/values/CSSValueVariant.cpp",
++                "Common/cpp/reanimated/CSS/common/values/CSSValueVariant.h",
++                "Common/cpp/reanimated/CSS/common/values/complex/CSSBoxShadow.cpp",
++                "Common/cpp/reanimated/CSS/common/values/complex/CSSBoxShadow.h",
++                "Common/cpp/reanimated/CSS/common/values/complex/CSSDropShadow.cpp",
++                "Common/cpp/reanimated/CSS/common/values/complex/CSSDropShadow.h",
++                "Common/cpp/reanimated/CSS/configs/CSSAnimationConfig.cpp",
++                "Common/cpp/reanimated/CSS/configs/CSSAnimationConfig.h",
++                "Common/cpp/reanimated/CSS/configs/CSSKeyframesConfig.cpp",
++                "Common/cpp/reanimated/CSS/configs/CSSKeyframesConfig.h",
++                "Common/cpp/reanimated/CSS/configs/CSSTransitionConfig.cpp",
++                "Common/cpp/reanimated/CSS/configs/CSSTransitionConfig.h",
++                "Common/cpp/reanimated/CSS/configs/common.cpp",
++                "Common/cpp/reanimated/CSS/configs/common.h",
++                "Common/cpp/reanimated/CSS/core/CSSAnimation.cpp",
++                "Common/cpp/reanimated/CSS/core/CSSAnimation.h",
++                "Common/cpp/reanimated/CSS/core/CSSAnimationObserver.h",
++                "Common/cpp/reanimated/CSS/core/CSSAnimationsGroup.cpp",
++                "Common/cpp/reanimated/CSS/core/CSSAnimationsGroup.h",
++                "Common/cpp/reanimated/CSS/core/CSSLoopAnimation.cpp",
++                "Common/cpp/reanimated/CSS/core/CSSLoopAnimation.h",
++                "Common/cpp/reanimated/CSS/core/CSSPlatformAnimation.h",
++                "Common/cpp/reanimated/CSS/core/CSSPlatformAnimationFactory.h",
++                "Common/cpp/reanimated/CSS/core/transition/CSSLoopTransition.cpp",
++                "Common/cpp/reanimated/CSS/core/transition/CSSLoopTransition.h",
++                "Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionProxy.cpp",
++                "Common/cpp/reanimated/CSS/core/transition/CSSPlatformTransitionProxy.h",
++                "Common/cpp/reanimated/CSS/core/transition/CSSTransition.cpp",
++                "Common/cpp/reanimated/CSS/core/transition/CSSTransition.h",
++                "Common/cpp/reanimated/CSS/easing/EasingConfigs.cpp",
++                "Common/cpp/reanimated/CSS/easing/EasingConfigs.h",
++                "Common/cpp/reanimated/CSS/easing/EasingFunctions.cpp",
++                "Common/cpp/reanimated/CSS/easing/EasingFunctions.h",
++                "Common/cpp/reanimated/CSS/easing/cubicBezier.cpp",
++                "Common/cpp/reanimated/CSS/easing/cubicBezier.h",
++                "Common/cpp/reanimated/CSS/easing/linear.cpp",
++                "Common/cpp/reanimated/CSS/easing/linear.h",
++                "Common/cpp/reanimated/CSS/easing/steps.cpp",
++                "Common/cpp/reanimated/CSS/easing/steps.h",
++                "Common/cpp/reanimated/CSS/events/CSSEvent.h",
++                "Common/cpp/reanimated/CSS/events/CSSEventsEmitter.cpp",
++                "Common/cpp/reanimated/CSS/events/CSSEventsEmitter.h",
++                "Common/cpp/reanimated/CSS/interpolation/InterpolatorFactory.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/InterpolatorFactory.h",
++                "Common/cpp/reanimated/CSS/interpolation/PropertyInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/PropertyInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/configs.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/FilterOperation.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/filters/FilterOperation.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/FilterOperationInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/filters/FilterOperationInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/FilterStyleInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/filters/FilterStyleInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/operations/blur.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/operations/brightness.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/operations/contrast.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/operations/dropShadow.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/operations/grayscale.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/operations/hueRotate.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/operations/invert.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/operations/opacity.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/operations/saturate.h",
++                "Common/cpp/reanimated/CSS/interpolation/filters/operations/sepia.h",
++                "Common/cpp/reanimated/CSS/interpolation/groups/ArrayPropertiesInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/groups/ArrayPropertiesInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/groups/GroupPropertiesInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/groups/GroupPropertiesInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/groups/RecordPropertiesInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/groups/RecordPropertiesInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/operations/OperationsStyleInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/operations/OperationsStyleInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/operations/StyleOperation.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/operations/StyleOperation.h",
++                "Common/cpp/reanimated/CSS/interpolation/operations/StyleOperationInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/operations/StyleOperationInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/styles/AnimationStyleInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/styles/AnimationStyleInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/styles/AnimationStyleInterpolatorFactory.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/styles/AnimationStyleInterpolatorFactory.h",
++                "Common/cpp/reanimated/CSS/interpolation/styles/TransitionStyleInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/styles/TransitionStyleInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/TransformOperation.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/TransformOperation.h",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/TransformOperationInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/TransformOperationInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/TransformsStyleInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/TransformsStyleInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/operations/matrix.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/operations/matrix.h",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/operations/perspective.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/operations/perspective.h",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/operations/rotate.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/operations/rotate.h",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/operations/scale.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/operations/scale.h",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/operations/skew.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/operations/skew.h",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/operations/translate.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/transforms/operations/translate.h",
++                "Common/cpp/reanimated/CSS/interpolation/values/ResolvableValueInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/values/ResolvableValueInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/values/SimpleValueInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/values/SimpleValueInterpolator.h",
++                "Common/cpp/reanimated/CSS/interpolation/values/ValueInterpolator.cpp",
++                "Common/cpp/reanimated/CSS/interpolation/values/ValueInterpolator.h",
++                "Common/cpp/reanimated/CSS/misc/ViewStylesRepository.cpp",
++                "Common/cpp/reanimated/CSS/misc/ViewStylesRepository.h",
++                "Common/cpp/reanimated/CSS/progress/AnimationProgressProvider.cpp",
++                "Common/cpp/reanimated/CSS/progress/AnimationProgressProvider.h",
++                "Common/cpp/reanimated/CSS/progress/KeyframeProgressProvider.h",
++                "Common/cpp/reanimated/CSS/progress/RunLifecycle.cpp",
++                "Common/cpp/reanimated/CSS/progress/RunLifecycle.h",
++                "Common/cpp/reanimated/CSS/progress/TimeProgressProvider.cpp",
++                "Common/cpp/reanimated/CSS/progress/TimeProgressProvider.h",
++                "Common/cpp/reanimated/CSS/progress/TransitionProgressProvider.cpp",
++                "Common/cpp/reanimated/CSS/progress/TransitionProgressProvider.h",
++                "Common/cpp/reanimated/CSS/registries/CSSAnimationsRegistry.cpp",
++                "Common/cpp/reanimated/CSS/registries/CSSAnimationsRegistry.h",
++                "Common/cpp/reanimated/CSS/registries/CSSKeyframesRegistry.cpp",
++                "Common/cpp/reanimated/CSS/registries/CSSKeyframesRegistry.h",
++                "Common/cpp/reanimated/CSS/registries/CSSTransitionsRegistry.cpp",
++                "Common/cpp/reanimated/CSS/registries/CSSTransitionsRegistry.h",
++                "Common/cpp/reanimated/CSS/registries/StaticPropsRegistry.cpp",
++                "Common/cpp/reanimated/CSS/registries/StaticPropsRegistry.h",
++                "Common/cpp/reanimated/CSS/svg/values/CSSLengthArray.cpp",
++                "Common/cpp/reanimated/CSS/svg/values/CSSLengthArray.h",
++                "Common/cpp/reanimated/CSS/svg/values/CSSLengthVector.cpp",
++                "Common/cpp/reanimated/CSS/svg/values/CSSLengthVector.h",
++                "Common/cpp/reanimated/CSS/svg/values/SVGBrush.cpp",
++                "Common/cpp/reanimated/CSS/svg/values/SVGBrush.h",
++                "Common/cpp/reanimated/CSS/svg/values/SVGPath.cpp",
++                "Common/cpp/reanimated/CSS/svg/values/SVGPath.h",
++                "Common/cpp/reanimated/CSS/svg/values/SVGStops.cpp",
++                "Common/cpp/reanimated/CSS/svg/values/SVGStops.h",
++                "Common/cpp/reanimated/CSS/svg/values/SVGStrokeDashArray.cpp",
++                "Common/cpp/reanimated/CSS/svg/values/SVGStrokeDashArray.h",
++                "Common/cpp/reanimated/CSS/utils/algorithms.cpp",
++                "Common/cpp/reanimated/CSS/utils/algorithms.h",
++                "Common/cpp/reanimated/CSS/utils/interpolators.cpp",
++                "Common/cpp/reanimated/CSS/utils/interpolators.h",
++                "Common/cpp/reanimated/CSS/utils/platform.cpp",
++                "Common/cpp/reanimated/CSS/utils/platform.h",
++                "Common/cpp/reanimated/CSS/utils/props.cpp",
++                "Common/cpp/reanimated/CSS/utils/props.h",
++                "Common/cpp/reanimated/CSS/utils/reversingShortening.h",
++                "Common/cpp/reanimated/Compat/WorkletsApi.h",
++                "Common/cpp/reanimated/Events/UIEventHandler.cpp",
++                "Common/cpp/reanimated/Events/UIEventHandler.h",
++                "Common/cpp/reanimated/Events/UIEventHandlerRegistry.cpp",
++                "Common/cpp/reanimated/Events/UIEventHandlerRegistry.h",
++                "Common/cpp/reanimated/Fabric/ReanimatedCommitHook.cpp",
++                "Common/cpp/reanimated/Fabric/ReanimatedCommitHook.h",
++                "Common/cpp/reanimated/Fabric/ReanimatedCommitShadowNode.h",
++                "Common/cpp/reanimated/Fabric/ReanimatedMountHook.cpp",
++                "Common/cpp/reanimated/Fabric/ReanimatedMountHook.h",
++                "Common/cpp/reanimated/Fabric/ReanimatedSurfaceTracker.h",
++                "Common/cpp/reanimated/Fabric/ShadowTreeCloner.cpp",
++                "Common/cpp/reanimated/Fabric/ShadowTreeCloner.h",
++                "Common/cpp/reanimated/Fabric/updates/AnimatedPropsRegistry.cpp",
++                "Common/cpp/reanimated/Fabric/updates/AnimatedPropsRegistry.h",
++                "Common/cpp/reanimated/Fabric/updates/OperationsLoop.cpp",
++                "Common/cpp/reanimated/Fabric/updates/OperationsLoop.h",
++                "Common/cpp/reanimated/Fabric/updates/PropsLayoutFilter.h",
++                "Common/cpp/reanimated/Fabric/updates/UpdatesRegistry.cpp",
++                "Common/cpp/reanimated/Fabric/updates/UpdatesRegistry.h",
++                "Common/cpp/reanimated/Fabric/updates/UpdatesRegistryManager.cpp",
++                "Common/cpp/reanimated/Fabric/updates/UpdatesRegistryManager.h",
++                "Common/cpp/reanimated/Fabric/updates/propNameFromString.h",
++                "Common/cpp/reanimated/LayoutAnimations/LayoutAnimationType.h",
++                "Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.cpp",
++                "Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsManager.h",
++                "Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxyCommon.cpp",
++                "Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxyCommon.h",
++                "Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy_Experimental.cpp",
++                "Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy_Experimental.h",
++                "Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy_Legacy.cpp",
++                "Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsProxy_Legacy.h",
++                "Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsUtils.cpp",
++                "Common/cpp/reanimated/LayoutAnimations/LayoutAnimationsUtils.h",
++                "Common/cpp/reanimated/LayoutAnimations/PropsDiffer.cpp",
++                "Common/cpp/reanimated/LayoutAnimations/PropsDiffer.h",
++                "Common/cpp/reanimated/LayoutAnimations/SharedTransitions.cpp",
++                "Common/cpp/reanimated/NativeModules/PropValueProcessor.cpp",
++                "Common/cpp/reanimated/NativeModules/PropValueProcessor.h",
++                "Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.cpp",
++                "Common/cpp/reanimated/NativeModules/ReanimatedModuleProxy.h",
++                "Common/cpp/reanimated/NativeModules/SynchronousPropsBufferSerializer.cpp",
++                "Common/cpp/reanimated/NativeModules/SynchronousPropsBufferSerializer.h",
++                "Common/cpp/reanimated/PseudoStyles/PseudoSelector.h",
++                "Common/cpp/reanimated/PseudoStyles/PseudoStylesRegistry.cpp",
++                "Common/cpp/reanimated/PseudoStyles/PseudoStylesRegistry.h",
++                "Common/cpp/reanimated/RuntimeDecorators/RNRuntimeDecorator.cpp",
++                "Common/cpp/reanimated/RuntimeDecorators/RNRuntimeDecorator.h",
++                "Common/cpp/reanimated/RuntimeDecorators/UIRuntimeDecorator.cpp",
++                "Common/cpp/reanimated/RuntimeDecorators/UIRuntimeDecorator.h",
++                "Common/cpp/reanimated/Tools/FeatureFlags.cpp",
++                "Common/cpp/reanimated/Tools/FeatureFlags.h",
++                "Common/cpp/reanimated/Tools/PlatformDepMethodsHolder.h",
++                "Common/cpp/reanimated/Tools/ReaJSIUtils.h",
++                "Common/cpp/reanimated/Tools/ReanimatedSystraceSection.h",
++                "Common/cpp/reanimated/Tools/ReanimatedVersion.cpp",
++                "Common/cpp/reanimated/Tools/ReanimatedVersion.h",
++                "Common/cpp/reanimated/Tools/SingleInstanceChecker.h",
++                "apple/reanimated/apple/CSS/REACSSPlatformProps.h",
++                "apple/reanimated/apple/CSS/REACSSPlatformProps.mm",
++                "apple/reanimated/apple/CSS/REACSSPlatformTransitions.h",
++                "apple/reanimated/apple/CSS/REACSSPlatformTransitions.mm",
++                "apple/reanimated/apple/RCTUIView+Reanimated.h",
++                "apple/reanimated/apple/RCTUIView+Reanimated.m",
++                "apple/reanimated/apple/REAAssertJavaScriptQueue.h",
++                "apple/reanimated/apple/REAAssertTurboModuleManagerQueue.h",
++                "apple/reanimated/apple/READisplayLink.h",
++                "apple/reanimated/apple/REANodesManager.h",
++                "apple/reanimated/apple/REANodesManager.mm",
++                "apple/reanimated/apple/REAReducedMotion.h",
++                "apple/reanimated/apple/REASlowAnimations.h",
++                "apple/reanimated/apple/REASlowAnimations.mm",
++                "apple/reanimated/apple/REAUIView.h",
++                "apple/reanimated/apple/RNGestureHandlerStateManager.h",
++                "apple/reanimated/apple/ReanimatedModule.h",
++                "apple/reanimated/apple/ReanimatedModule.mm",
++                "apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.h",
++                "apple/reanimated/apple/keyboardObserver/REAKeyboardEventObserver.mm",
++                "apple/reanimated/apple/native/NativeProxy.h",
++                "apple/reanimated/apple/native/NativeProxy.mm",
++                "apple/reanimated/apple/native/PlatformDepMethodsHolderImpl.h",
++                "apple/reanimated/apple/native/PlatformDepMethodsHolderImpl.mm",
++                "apple/reanimated/apple/native/REAJSIUtils.h",
++                "apple/reanimated/apple/native/SetGestureState.h",
++                "apple/reanimated/apple/native/SetGestureState.mm",
++                "apple/reanimated/apple/pseudoSelectors/REAPseudoSelectorAttachQueue.h",
++                "apple/reanimated/apple/pseudoSelectors/REAPseudoSelectorAttachQueue.mm",
++                "apple/reanimated/apple/pseudoSelectors/REAPseudoSelectorObserver.h",
++                "apple/reanimated/apple/pseudoSelectors/REAPseudoSelectorObserver.mm",
++                "apple/reanimated/apple/pseudoSelectors/REATouchHoverCoordinator.h",
++                "apple/reanimated/apple/pseudoSelectors/REATouchHoverCoordinator.mm",
++                "apple/reanimated/apple/sensor/ReanimatedSensor.h",
++                "apple/reanimated/apple/sensor/ReanimatedSensor.m",
++                "apple/reanimated/apple/sensor/ReanimatedSensorContainer.h",
++                "apple/reanimated/apple/sensor/ReanimatedSensorContainer.m",
++                "apple/reanimated/apple/sensor/ReanimatedSensorType.h",
++                "apple/reanimated/apple/view/REASharedTransitionBoundaryView.h",
++                "apple/reanimated/apple/view/REASharedTransitionBoundaryView.mm",
++            ],
++            publicHeadersPath: "Common/cpp",
++            cSettings: [.define("REANIMATED_VERSION", to: "4.6.0"), .define("REANIMATED_FEATURE_FLAGS", to: "\"[RUNTIME_TEST_FLAG:false][DISABLE_COMMIT_PAUSING_MECHANISM:false][ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][EXPERIMENTAL_CSS_ANIMATIONS_FOR_SVG_COMPONENTS:true][IOS_CSS_CORE_ANIMATION:false][ANDROID_CSS_PLATFORM_TRANSITIONS:false][USE_SYNCHRONIZABLE_FOR_MUTABLES:true][USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS:true][ENABLE_SHARED_ELEMENT_TRANSITIONS:false][FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS:true][USE_ANIMATION_BACKEND:false]\""), .headerSearchPath("ReactCommon"), .headerSearchPath("."), .headerSearchPath("Common/cpp"), .headerSearchPath("apple"), .headerSearchPath("Common"), .headerSearchPath("Common/NativeView/react/renderer/components/rnreanimated"), .headerSearchPath("Common/cpp/reanimated/AnimatedSensor"), .headerSearchPath("Common/cpp/reanimated/CSS"), .headerSearchPath("Common/cpp/reanimated/CSS/common"), .headerSearchPath("Common/cpp/reanimated/CSS/common/filters"), .headerSearchPath("Common/cpp/reanimated/CSS/common/transforms"), .headerSearchPath("Common/cpp/reanimated/CSS/common/values"), .headerSearchPath("Common/cpp/reanimated/CSS/common/values/complex"), .headerSearchPath("Common/cpp/reanimated/CSS/configs"), .headerSearchPath("Common/cpp/reanimated/CSS/core"), .headerSearchPath("Common/cpp/reanimated/CSS/core/transition"), .headerSearchPath("Common/cpp/reanimated/CSS/easing"), .headerSearchPath("Common/cpp/reanimated/CSS/events"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/filters"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/filters/operations"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/groups"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/operations"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/styles"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/transforms"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/transforms/operations"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/values"), .headerSearchPath("Common/cpp/reanimated/CSS/misc"), .headerSearchPath("Common/cpp/reanimated/CSS/progress"), .headerSearchPath("Common/cpp/reanimated/CSS/registries"), .headerSearchPath("Common/cpp/reanimated/CSS/svg/values"), .headerSearchPath("Common/cpp/reanimated/CSS/utils"), .headerSearchPath("Common/cpp/reanimated/Compat"), .headerSearchPath("Common/cpp/reanimated/Events"), .headerSearchPath("Common/cpp/reanimated/Fabric"), .headerSearchPath("Common/cpp/reanimated/Fabric/updates"), .headerSearchPath("Common/cpp/reanimated/LayoutAnimations"), .headerSearchPath("Common/cpp/reanimated/NativeModules"), .headerSearchPath("Common/cpp/reanimated/PseudoStyles"), .headerSearchPath("Common/cpp/reanimated/RuntimeDecorators"), .headerSearchPath("Common/cpp/reanimated/Tools"), .headerSearchPath("apple/reanimated/apple/CSS"), .headerSearchPath("apple/reanimated/apple"), .headerSearchPath("apple/reanimated/apple/keyboardObserver"), .headerSearchPath("apple/reanimated/apple/native"), .headerSearchPath("apple/reanimated/apple/pseudoSelectors"), .headerSearchPath("apple/reanimated/apple/sensor"), .headerSearchPath("apple/reanimated/apple/view"), .unsafeFlags(["-include", "react-native-spm-prefix.h"])],
++            cxxSettings: [.define("REANIMATED_VERSION", to: "4.6.0"), .define("REANIMATED_FEATURE_FLAGS", to: "\"[RUNTIME_TEST_FLAG:false][DISABLE_COMMIT_PAUSING_MECHANISM:false][ANDROID_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][IOS_SYNCHRONOUSLY_UPDATE_UI_PROPS:false][EXPERIMENTAL_CSS_ANIMATIONS_FOR_SVG_COMPONENTS:true][IOS_CSS_CORE_ANIMATION:false][ANDROID_CSS_PLATFORM_TRANSITIONS:false][USE_SYNCHRONIZABLE_FOR_MUTABLES:true][USE_COMMIT_HOOK_ONLY_FOR_REACT_COMMITS:true][ENABLE_SHARED_ELEMENT_TRANSITIONS:false][FORCE_REACT_RENDER_FOR_SETTLED_ANIMATIONS:true][USE_ANIMATION_BACKEND:false]\""), .headerSearchPath("ReactCommon"), .headerSearchPath("."), .headerSearchPath("Common/cpp"), .headerSearchPath("apple"), .headerSearchPath("Common"), .headerSearchPath("Common/NativeView/react/renderer/components/rnreanimated"), .headerSearchPath("Common/cpp/reanimated/AnimatedSensor"), .headerSearchPath("Common/cpp/reanimated/CSS"), .headerSearchPath("Common/cpp/reanimated/CSS/common"), .headerSearchPath("Common/cpp/reanimated/CSS/common/filters"), .headerSearchPath("Common/cpp/reanimated/CSS/common/transforms"), .headerSearchPath("Common/cpp/reanimated/CSS/common/values"), .headerSearchPath("Common/cpp/reanimated/CSS/common/values/complex"), .headerSearchPath("Common/cpp/reanimated/CSS/configs"), .headerSearchPath("Common/cpp/reanimated/CSS/core"), .headerSearchPath("Common/cpp/reanimated/CSS/core/transition"), .headerSearchPath("Common/cpp/reanimated/CSS/easing"), .headerSearchPath("Common/cpp/reanimated/CSS/events"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/filters"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/filters/operations"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/groups"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/operations"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/styles"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/transforms"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/transforms/operations"), .headerSearchPath("Common/cpp/reanimated/CSS/interpolation/values"), .headerSearchPath("Common/cpp/reanimated/CSS/misc"), .headerSearchPath("Common/cpp/reanimated/CSS/progress"), .headerSearchPath("Common/cpp/reanimated/CSS/registries"), .headerSearchPath("Common/cpp/reanimated/CSS/svg/values"), .headerSearchPath("Common/cpp/reanimated/CSS/utils"), .headerSearchPath("Common/cpp/reanimated/Compat"), .headerSearchPath("Common/cpp/reanimated/Events"), .headerSearchPath("Common/cpp/reanimated/Fabric"), .headerSearchPath("Common/cpp/reanimated/Fabric/updates"), .headerSearchPath("Common/cpp/reanimated/LayoutAnimations"), .headerSearchPath("Common/cpp/reanimated/NativeModules"), .headerSearchPath("Common/cpp/reanimated/PseudoStyles"), .headerSearchPath("Common/cpp/reanimated/RuntimeDecorators"), .headerSearchPath("Common/cpp/reanimated/Tools"), .headerSearchPath("apple/reanimated/apple/CSS"), .headerSearchPath("apple/reanimated/apple"), .headerSearchPath("apple/reanimated/apple/keyboardObserver"), .headerSearchPath("apple/reanimated/apple/native"), .headerSearchPath("apple/reanimated/apple/pseudoSelectors"), .headerSearchPath("apple/reanimated/apple/sensor"), .headerSearchPath("apple/reanimated/apple/view"), .unsafeFlags(["-include", "react-native-spm-prefix.h"]), .unsafeFlags(["-Wno-documentation"]), .define("DEBUG", .when(configuration: .debug)), .define("NDEBUG", .when(configuration: .release))],
++            linkerSettings: [.linkedFramework("UIKit"), .linkedFramework("Foundation"), .linkedFramework("CoreGraphics")]
++        ),
++    ],
++    cxxLanguageStandard: .cxx20
++)
+diff --git a/android/build.gradle.kts b/android/build.gradle.kts
+index 8dc918d180a09ac32cc87eda455f2e781ff46ab3..1104431478133bacb4a331f9c29d53fd8cbbd084 100644
+--- a/android/build.gradle.kts
++++ b/android/build.gradle.kts
+@@ -36,6 +36,19 @@ fun safeAppExtGet(prop: String, fallback: Any?): Any? {
+         fallback
+ }
+ 
++fun resolveNodeExecutable(): String {
++    val nodeFromEnv = System.getenv("NODE_BINARY")
++    if (!nodeFromEnv.isNullOrEmpty() && file(nodeFromEnv).exists()) {
++        return nodeFromEnv
++    }
++    val fallbackCandidates = listOf(
++        "/opt/homebrew/bin/node",
++        "/usr/local/bin/node",
++        "/usr/bin/node"
++    )
++    return fallbackCandidates.firstOrNull { file(it).exists() } ?: "node"
++}
++
+ fun resolveReactNativeDirectory(): File {
+     val reactNativeLocationProperty = safeAppExtGet("REACT_NATIVE_NODE_MODULES_DIR", null)
+     if (reactNativeLocationProperty != null) {
+@@ -46,11 +59,16 @@ fun resolveReactNativeDirectory(): File {
+         }
+     }
+ 
++    val standardRnDirFile = file("$rootDir/../node_modules/react-native")
++    if (standardRnDirFile.exists()) {
++        return standardRnDirFile
++    }
++
+     // Fallback to node resolver for custom directory structures like monorepos.
+     val reactNativePackage = file(
+         providers.exec {
+             workingDir(rootDir)
+-            commandLine("node", "--print", "require.resolve('react-native/package.json')")
++            commandLine(resolveNodeExecutable(), "--print", "require.resolve('react-native/package.json')")
+         }.standardOutput.asText.get().trim()
+     )
+     if (reactNativePackage.exists()) {
+@@ -290,7 +308,7 @@ androidComponents {
+ 
+ val validateReactNativeVersionResult = providers.exec {
+     workingDir(projectDir.path)
+-    commandLine("node", "./../scripts/validate-react-native-version.js", REACT_NATIVE_VERSION)
++    commandLine(resolveNodeExecutable(), "./../scripts/validate-react-native-version.js", REACT_NATIVE_VERSION)
+     isIgnoreExitValue = true
+ }
+ 
+@@ -307,7 +325,7 @@ tasks.named("preBuild") { dependsOn("assertMinimalReactNativeVersionTask") }
+ 
+ val validateWorkletsBuildResult = providers.exec {
+     workingDir(projectDir.path)
+-    commandLine("node", "./../scripts/validate-worklets-build.js")
++    commandLine(resolveNodeExecutable(), "./../scripts/validate-worklets-build.js")
+     isIgnoreExitValue = true
+ }
+ 
+diff --git a/react-native-spm-prefix.h b/react-native-spm-prefix.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..af5cea0557f2f4aa957419f0fc3f250fd55dbaf5
+--- /dev/null
++++ b/react-native-spm-prefix.h
+@@ -0,0 +1,10 @@
++// AUTO-SCAFFOLDED by react-native spm scaffold — mirrors CocoaPods' default
++// prefix header so ObjC sources that rely on an implicit Foundation/UIKit
++// import compile under SPM (which has no prefix-header mechanism). Safe to
++// delete + regenerate via `npx react-native spm scaffold`.
++#ifdef __OBJC__
++#import <Foundation/Foundation.h>
++#if __has_include(<UIKit/UIKit.h>)
++#import <UIKit/UIKit.h>
++#endif
++#endif

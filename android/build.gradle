@@ -19,3 +19,27 @@ buildscript {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+def findNode() {
+    def fromEnv = System.getenv("NODE_BINARY")
+    if (fromEnv && file(fromEnv).exists()) return fromEnv
+    def candidates = [
+        "/opt/homebrew/bin/node",
+        "/usr/local/bin/node",
+        "/usr/bin/node"
+    ]
+    return candidates.find { file(it).exists() } ?: "node"
+}
+
+allprojects {
+    plugins.withId("com.facebook.react") {
+        react {
+            nodeExecutableAndArgs = [findNode()]
+        }
+    }
+
+    tasks.withType(Exec).configureEach {
+        def currentPath = environment.PATH ?: System.getenv("PATH") ?: ""
+        environment "PATH", "/opt/homebrew/bin:/usr/local/bin:${currentPath}"
+    }
+}
