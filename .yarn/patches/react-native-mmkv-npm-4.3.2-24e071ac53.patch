@@ -1,0 +1,167 @@
+diff --git a/Package.swift b/Package.swift
+new file mode 100644
+index 0000000000000000000000000000000000000000..09f9f3cc890abbd9202261a04095889965acbc76
+--- /dev/null
++++ b/Package.swift
+@@ -0,0 +1,67 @@
++// swift-tools-version: 6.0
++import PackageDescription
++
++let package = Package(
++    name: "ReactNativeMmkv",
++    platforms: [.iOS(.v15), .tvOS(.v15)],
++    products: [
++        .library(name: "ReactNativeMmkv", targets: ["ReactNativeMmkv"]),
++    ],
++    dependencies: [
++        .package(name: "ReactNative", path: "../../../../xcframeworks"),
++        .package(name: "React-GeneratedCode", path: "../../../ios"),
++        .package(name: "ReactNativeNitroModules", path: "../ReactNativeNitroModules"),
++        .package(url: "https://github.com/aliffazfar/MMKV.git", branch: "fix/swift-6-compat"),
++    ],
++    targets: [
++        .target(
++            name: "ReactNativeMmkv",
++            dependencies: [
++                .product(name: "ReactHeaders", package: "ReactNative"),
++                .product(name: "ReactNativeHeaders", package: "ReactNative"),
++                .product(name: "ReactNativeDependenciesHeaders", package: "ReactNative"),
++                .product(name: "ReactAppHeaders", package: "React-GeneratedCode"),
++                .product(name: "ReactNativeNitroModules", package: "ReactNativeNitroModules"),
++                .product(name: "MMKVCore", package: "MMKV"),
++            ],
++            path: ".",
++            exclude: [
++                "android",
++                "src",
++                "lib",
++                "README.md",
++                "NitroMmkv.podspec",
++                "package.json",
++            ],
++            sources: [
++                "cpp/HybridMMKV.cpp",
++                "cpp/HybridMMKVFactory.cpp",
++                "cpp/MMKVValueChangedListenerRegistry.cpp",
++                "nitrogen/generated/shared/c++/HybridMMKVFactorySpec.cpp",
++                "nitrogen/generated/shared/c++/HybridMMKVPlatformContextSpec.cpp",
++                "nitrogen/generated/shared/c++/HybridMMKVSpec.cpp",
++                "ios/HybridMMKVPlatformContext.mm",
++                "nitrogen/generated/ios/NitroMmkvAutolinking.mm",
++            ],
++            publicHeadersPath: ".",
++            cSettings: [
++                .headerSearchPath("cpp"),
++                .headerSearchPath("nitrogen/generated/shared/c++"),
++                .headerSearchPath("ios"),
++                .headerSearchPath("nitrogen/generated/ios"),
++            ],
++            cxxSettings: [
++                .headerSearchPath("cpp"),
++                .headerSearchPath("nitrogen/generated/shared/c++"),
++                .headerSearchPath("ios"),
++                .headerSearchPath("nitrogen/generated/ios"),
++                .unsafeFlags(["-std=c++20"]),
++            ],
++            linkerSettings: [
++                .linkedFramework("Foundation"),
++                .linkedFramework("UIKit"),
++            ]
++        ),
++    ],
++    cxxLanguageStandard: .cxx20
++)
+diff --git a/ios/HybridMMKVPlatformContext.hpp b/ios/HybridMMKVPlatformContext.hpp
+new file mode 100644
+index 0000000000000000000000000000000000000000..4fe11fafa0f2c3e313f00a279cf2b9426e771d65
+--- /dev/null
++++ b/ios/HybridMMKVPlatformContext.hpp
+@@ -0,0 +1,15 @@
++#pragma once
++
++#include "HybridMMKVPlatformContextSpec.hpp"
++
++namespace margelo::nitro::mmkv {
++
++class HybridMMKVPlatformContext final : public HybridMMKVPlatformContextSpec {
++public:
++  HybridMMKVPlatformContext() : HybridObject(TAG) {}
++
++  std::string getBaseDirectory() override;
++  std::optional<std::string> getAppGroupDirectory() override;
++};
++
++} // namespace margelo::nitro::mmkv
+diff --git a/ios/HybridMMKVPlatformContext.mm b/ios/HybridMMKVPlatformContext.mm
+new file mode 100644
+index 0000000000000000000000000000000000000000..3a36bdc5838c3dba8c5686d679a9868e85899892
+--- /dev/null
++++ b/ios/HybridMMKVPlatformContext.mm
+@@ -0,0 +1,40 @@
++#import "HybridMMKVPlatformContext.hpp"
++
++#import <Foundation/Foundation.h>
++#import <TargetConditionals.h>
++
++namespace margelo::nitro::mmkv {
++
++std::string HybridMMKVPlatformContext::getBaseDirectory() {
++#if TARGET_OS_TV
++  constexpr auto directory = NSCachesDirectory;
++#else
++  constexpr auto directory = NSDocumentDirectory;
++#endif
++
++  NSArray<NSURL*>* paths = [[NSFileManager defaultManager] URLsForDirectory:directory inDomains:NSUserDomainMask];
++  NSURL* directoryURL = paths.firstObject;
++  if (directoryURL == nil) {
++    throw std::runtime_error("Cannot find base-path to store MMKV files!");
++  }
++
++  NSURL* mmkvURL = [directoryURL URLByAppendingPathComponent:@"mmkv" isDirectory:YES];
++  return mmkvURL.path.UTF8String;
++}
++
++std::optional<std::string> HybridMMKVPlatformContext::getAppGroupDirectory() {
++  NSString* appGroupID = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"AppGroupIdentifier"];
++  if (appGroupID == nil) {
++    return std::nullopt;
++  }
++
++  NSURL* containerURL = [[NSFileManager defaultManager] containerURLForSecurityApplicationGroupIdentifier:appGroupID];
++  if (containerURL == nil) {
++    std::string message = "Container for AppGroup \"" + std::string(appGroupID.UTF8String) + "\" not accessible";
++    throw std::runtime_error(message);
++  }
++
++  return std::string(containerURL.path.UTF8String);
++}
++
++} // namespace margelo::nitro::mmkv
+diff --git a/nitrogen/generated/ios/NitroMmkvAutolinking.mm b/nitrogen/generated/ios/NitroMmkvAutolinking.mm
+index feb7ede2b1c0f0eec9cde481805b057957360e35..13e8e86eb80419740a823733947f05bdf22d5cf3 100644
+--- a/nitrogen/generated/ios/NitroMmkvAutolinking.mm
++++ b/nitrogen/generated/ios/NitroMmkvAutolinking.mm
+@@ -7,11 +7,10 @@
+ 
+ #import <Foundation/Foundation.h>
+ #import <NitroModules/HybridObjectRegistry.hpp>
+-#import "NitroMmkv-Swift-Cxx-Umbrella.hpp"
+ #import <type_traits>
+ 
+ #include "HybridMMKVFactory.hpp"
+-#include "HybridMMKVPlatformContextSpecSwift.hpp"
++#include "HybridMMKVPlatformContext.hpp"
+ 
+ @interface NitroMmkvAutolinking : NSObject
+ @end
+@@ -34,8 +33,7 @@
+   HybridObjectRegistry::registerHybridObjectConstructor(
+     "MMKVPlatformContext",
+     []() -> std::shared_ptr<HybridObject> {
+-      std::shared_ptr<HybridMMKVPlatformContextSpec> hybridObject = NitroMmkv::NitroMmkvAutolinking::createMMKVPlatformContext();
+-      return hybridObject;
++      return std::make_shared<HybridMMKVPlatformContext>();
+     }
+   );
+ }

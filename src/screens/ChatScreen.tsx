@@ -17,6 +17,7 @@ import {
   Check,
   CheckCheck,
 } from '@/components/icons';
+import { useChatStore } from '@/store';
 
 interface ChatItem {
   id: string;
@@ -98,7 +99,7 @@ const MOCK_CHATS: ChatItem[] = [
 export function ChatScreen() {
   const insets = useSafeAreaInsets();
   const navigation = useNavigation<any>();
-  const [activeFilter, setActiveFilter] = useState<'all' | 'unread' | 'group'>('all');
+  const { activeFilter, setActiveFilter } = useChatStore();
 
   return (
     <View className="flex-1 bg-white" style={{ paddingTop: insets.top }}>

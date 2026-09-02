@@ -15,7 +15,7 @@ index 0000000000000000000000000000000000000000..4ac7528fbe244a22b971d460fb1f3fab
 +  ],
 +  dependencies: [
 +    .package(url: "https://github.com/kean/Nuke.git", exact: "12.8.0"),
-+    .package(name: "ReactNative", path: "../../ios/build/xcframeworks"),
++    .package(name: "ReactNative", path: "../../../../xcframeworks"),
 +  ],
 +  targets: [
 +    .target(

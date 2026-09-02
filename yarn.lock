@@ -2372,20 +2372,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@react-native/new-app-screen@npm:0.87.1":
-  version: 0.87.1
-  resolution: "@react-native/new-app-screen@npm:0.87.1"
-  peerDependencies:
-    "@types/react": ^19.1.0
-    react: "*"
-    react-native: 0.87.1
-  peerDependenciesMeta:
-    "@types/react":
-      optional: true
-  checksum: 10c0/8b4c8ecfeb5dc10dee8f376252eab62ea78ac6ac4a420d87ad3ec6b24153de3944abae029a782e0fa8bc738a4d22278e853766c6afc22d00930f19f5d667c24d
-  languageName: node
-  linkType: hard
-
 "@react-native/normalize-colors@npm:0.87.1":
   version: 0.87.1
   resolution: "@react-native/normalize-colors@npm:0.87.1"
@@ -3022,7 +3008,6 @@ __metadata:
     "@react-native/eslint-config": "npm:0.87.1"
     "@react-native/jest-preset": "npm:0.87.1"
     "@react-native/metro-config": "npm:0.87.1"
-    "@react-native/new-app-screen": "npm:0.87.1"
     "@react-native/typescript-config": "npm:0.87.1"
     "@react-navigation/bottom-tabs": "npm:^7.18.18"
     "@react-navigation/native": "npm:^7.3.18"
@@ -3037,6 +3022,8 @@ __metadata:
     react: "npm:19.2.3"
     react-native: "npm:0.87.1"
     react-native-dotenv: "npm:^4.1.1"
+    react-native-mmkv: "patch:react-native-mmkv@npm%3A4.3.2#~/.yarn/patches/react-native-mmkv-npm-4.3.2-24e071ac53.patch"
+    react-native-nitro-modules: "patch:react-native-nitro-modules@npm%3A0.37.1#~/.yarn/patches/react-native-nitro-modules-npm-0.37.1-d46109edee.patch"
     react-native-reanimated: "patch:react-native-reanimated@npm%3A4.6.0#~/.yarn/patches/react-native-reanimated-npm-4.6.0-f4226872a0.patch"
     react-native-safe-area-context: "patch:react-native-safe-area-context@npm%3A5.9.1#~/.yarn/patches/react-native-safe-area-context-npm-5.9.1-b51fb9c5f7.patch"
     react-native-screens: "patch:react-native-screens@npm%3A4.27.0#~/.yarn/patches/react-native-screens-npm-4.27.0-78335f53c6.patch"
@@ -3046,6 +3033,7 @@ __metadata:
     tailwindcss: "npm:^4.3.3"
     typescript: "npm:^6.0.3"
     uniwind: "npm:^1.11.0"
+    zustand: "npm:^5.0.15"
   languageName: unknown
   linkType: soft
 
@@ -8084,6 +8072,48 @@ __metadata:
   languageName: node
   linkType: hard
 
+"react-native-mmkv@npm:4.3.2":
+  version: 4.3.2
+  resolution: "react-native-mmkv@npm:4.3.2"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-nitro-modules: "*"
+  checksum: 10c0/47c86114ee0ddbc8245dda174f419df9390a8ce0a6bcee0ded5eabd0b257e2b49257ddaf3b39eb5ab95ad7eed0ffa6d6b1e7c6bf8a3e56e6508408e49b98ed07
+  languageName: node
+  linkType: hard
+
+"react-native-mmkv@patch:react-native-mmkv@npm%3A4.3.2#~/.yarn/patches/react-native-mmkv-npm-4.3.2-24e071ac53.patch":
+  version: 4.3.2
+  resolution: "react-native-mmkv@patch:react-native-mmkv@npm%3A4.3.2#~/.yarn/patches/react-native-mmkv-npm-4.3.2-24e071ac53.patch::version=4.3.2&hash=a187aa"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+    react-native-nitro-modules: "*"
+  checksum: 10c0/f359dfc6fbd40f9c5b52eb920c4c2fc26b54b7e8b91abc0a6d21b08dc239ef1c0cbd7c94780ce2a1f9d6cfc01792c3270a56719a905bf159c88cb8213f501692
+  languageName: node
+  linkType: hard
+
+"react-native-nitro-modules@npm:0.37.1":
+  version: 0.37.1
+  resolution: "react-native-nitro-modules@npm:0.37.1"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/5178f2ee891cb746b084fdf382b6020e366d8e4a81922a3f1d60a453d34fca6ebb1b00c4c28785c36385bc182ab76a30cba70441c39abbc25d3ad54db612e46e
+  languageName: node
+  linkType: hard
+
+"react-native-nitro-modules@patch:react-native-nitro-modules@npm%3A0.37.1#~/.yarn/patches/react-native-nitro-modules-npm-0.37.1-d46109edee.patch":
+  version: 0.37.1
+  resolution: "react-native-nitro-modules@patch:react-native-nitro-modules@npm%3A0.37.1#~/.yarn/patches/react-native-nitro-modules-npm-0.37.1-d46109edee.patch::version=0.37.1&hash=051091"
+  peerDependencies:
+    react: "*"
+    react-native: "*"
+  checksum: 10c0/b01a04dcaf9840d88cd3e912ae23f5b26ff8382f571d8366290090be2959d3408bdaf718573351cca1cfb779bef518a9cba3250acbb88694a7b082907b221834
+  languageName: node
+  linkType: hard
+
 "react-native-reanimated@npm:4.6.0":
   version: 4.6.0
   resolution: "react-native-reanimated@npm:4.6.0"
@@ -8170,11 +8200,11 @@ __metadata:
 
 "react-native-turbo-image@patch:react-native-turbo-image@npm%3A1.24.3#~/.yarn/patches/react-native-turbo-image-npm-1.24.3-0abf51f609.patch":
   version: 1.24.3
-  resolution: "react-native-turbo-image@patch:react-native-turbo-image@npm%3A1.24.3#~/.yarn/patches/react-native-turbo-image-npm-1.24.3-0abf51f609.patch::version=1.24.3&hash=319df1"
+  resolution: "react-native-turbo-image@patch:react-native-turbo-image@npm%3A1.24.3#~/.yarn/patches/react-native-turbo-image-npm-1.24.3-0abf51f609.patch::version=1.24.3&hash=f788cc"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/edcf15f6a90c741981fe3137fe2c784116c17afc8eb98a074fccb463c780cf9ddcc4bf77e2b7194f74101da1863a18066687ce3c8a180e2d4bd7ce144556a02f
+  checksum: 10c0/b44ca785c7773c04e8c05cd2ab929fbc21f961db3928f469142d74206a1b3857b2e15b425f08b10c1e752c1943b85687913d8ae4b095f79136de6218445012e5
   languageName: node
   linkType: hard
 
@@ -9859,5 +9889,26 @@ __metadata:
   version: 4.5.4
   resolution: "zod@npm:4.5.4"
   checksum: 10c0/511a2a4d1a6f875dfdd70a1586989a8b14ef126776cd6218a2c760b9f65f14ef389ec20d92ee1aa4fcb4566d4ff3fa012956044f9dc503510d82e4c756a8ba92
+  languageName: node
+  linkType: hard
+
+"zustand@npm:^5.0.15":
+  version: 5.0.15
+  resolution: "zustand@npm:5.0.15"
+  peerDependencies:
+    "@types/react": ">=18.0.0"
+    immer: ">=9.0.6"
+    react: ">=18.0.0"
+    use-sync-external-store: ">=1.2.0"
+  peerDependenciesMeta:
+    "@types/react":
+      optional: true
+    immer:
+      optional: true
+    react:
+      optional: true
+    use-sync-external-store:
+      optional: true
+  checksum: 10c0/ed3a883950a8c22d98e8c72cef103af18043ce66b45faf218ad20ccc8ee29716aacfc6b0a3e783b2152ea38b7663f3982bb6bf2b13ce3df692b05276446afa04
   languageName: node
   linkType: hard
