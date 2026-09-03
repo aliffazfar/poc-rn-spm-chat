@@ -392,6 +392,7 @@ function StatusViewer({
 }
 
 export function StatusScreen() {
+  const { isDark } = useAppTheme()
   const [selectedStatus, setSelectedStatus] = useState<SelectedStatus | null>(
     null,
   )
@@ -408,10 +409,12 @@ export function StatusScreen() {
   const openStatus = (contact: StatusContact) => {
     setSelectedStatus({ contact, index: 0 })
     setViewerVisible(true)
+    StatusBar.setBarStyle(isDark ? 'light-content' : 'dark-content')
   }
 
   const closeViewer = () => {
     setViewerVisible(false)
+    StatusBar.setBarStyle(isDark ? 'light-content' : 'dark-content')
   }
 
   const loadMore = () => {
@@ -457,8 +460,14 @@ export function StatusScreen() {
         animationType="fade"
         presentationStyle="fullScreen"
         statusBarTranslucent
+        onShow={() => {
+          StatusBar.setBarStyle(isDark ? 'light-content' : 'dark-content')
+        }}
         onRequestClose={closeViewer}
-        onDismiss={() => setSelectedStatus(null)}
+        onDismiss={() => {
+          setSelectedStatus(null)
+          StatusBar.setBarStyle(isDark ? 'light-content' : 'dark-content')
+        }}
       >
         {selectedStatus ? (
           <StatusViewer
