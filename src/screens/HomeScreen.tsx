@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { AnimatedButton } from '@/components/AnimatedButton';
-import { EnvCard } from '@/components/EnvCard';
-import { Header } from '@/components/Header';
+import { AnimatedButton, EnvCard, Header } from '@/components';
 import { getAppConfig } from '@/utils/config';
 
 export function HomeScreen() {

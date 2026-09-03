@@ -2,7 +2,7 @@ import React from 'react';
 import { Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
-import { AnimatedButton } from '@/components/AnimatedButton';
+import { AnimatedButton } from '@/components';
 
 export function DetailsScreen() {
   const insets = useSafeAreaInsets();

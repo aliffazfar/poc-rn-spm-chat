@@ -1,9 +1,9 @@
 diff --git a/Package.swift b/Package.swift
 new file mode 100644
-index 0000000000000000000000000000000000000000..c6a6135136705c5938081b56e5c25ee8b563f102
+index 0000000000000000000000000000000000000000..f0b39ded99b67630d3a4e91d318e4599e87ebc6f
 --- /dev/null
 +++ b/Package.swift
-@@ -0,0 +1,95 @@
+@@ -0,0 +1,106 @@
 +// swift-tools-version: 6.0
 +import PackageDescription
 +
@@ -15,6 +15,7 @@ index 0000000000000000000000000000000000000000..c6a6135136705c5938081b56e5c25ee8
 +    ],
 +    dependencies: [
 +        .package(name: "ReactNative", path: "../../../../xcframeworks"),
++        .package(name: "React-GeneratedCode", path: "../../../ios"),
 +    ],
 +    targets: [
 +        .target(
@@ -23,6 +24,8 @@ index 0000000000000000000000000000000000000000..c6a6135136705c5938081b56e5c25ee8
 +                .product(name: "ReactHeaders", package: "ReactNative"),
 +                .product(name: "ReactNativeHeaders", package: "ReactNative"),
 +                .product(name: "ReactNativeDependenciesHeaders", package: "ReactNative"),
++                .product(name: "ReactAppHeaders", package: "React-GeneratedCode"),
++                .product(name: "ReactCodegen", package: "React-GeneratedCode"),
 +            ],
 +            path: ".",
 +            exclude: [
@@ -49,6 +52,8 @@ index 0000000000000000000000000000000000000000..c6a6135136705c5938081b56e5c25ee8
 +            ],
 +            publicHeadersPath: "include",
 +            cSettings: [
++                .define("RCT_NEW_ARCH_ENABLED", to: "1"),
++                .headerSearchPath("."),
 +                .headerSearchPath("include"),
 +                .headerSearchPath("cpp"),
 +                .headerSearchPath("cpp/core"),
@@ -68,8 +73,11 @@ index 0000000000000000000000000000000000000000..c6a6135136705c5938081b56e5c25ee8
 +                .headerSearchPath("ios/turbomodule"),
 +                .headerSearchPath("ios/threading"),
 +                .headerSearchPath("ios/views"),
++                .unsafeFlags(["-include", "react-native-spm-prefix.h"]),
 +            ],
 +            cxxSettings: [
++                .define("RCT_NEW_ARCH_ENABLED", to: "1"),
++                .headerSearchPath("."),
 +                .headerSearchPath("include"),
 +                .headerSearchPath("cpp"),
 +                .headerSearchPath("cpp/core"),
@@ -90,6 +98,9 @@ index 0000000000000000000000000000000000000000..c6a6135136705c5938081b56e5c25ee8
 +                .headerSearchPath("ios/threading"),
 +                .headerSearchPath("ios/views"),
 +                .unsafeFlags(["-std=c++20"]),
++                .unsafeFlags(["-include", "react-native-spm-prefix.h"]),
++                .define("DEBUG", .when(configuration: .debug)),
++                .define("NDEBUG", .when(configuration: .release)),
 +            ],
 +            linkerSettings: [
 +                .linkedFramework("Foundation"),
@@ -6297,3 +6308,16 @@ index 0000000000000000000000000000000000000000..22ca5c77fbf7383343e6e0e0be3d13c6
 +};
 +
 +} // namespace margelo::nitro
+diff --git a/react-native-spm-prefix.h b/react-native-spm-prefix.h
+new file mode 100644
+index 0000000000000000000000000000000000000000..ea45c2254ebfac6b12a871d4204c2e913aeefa1c
+--- /dev/null
++++ b/react-native-spm-prefix.h
+@@ -0,0 +1,7 @@
++// Prefix header for react-native-nitro-modules SPM
++#ifdef __OBJC__
++#import <Foundation/Foundation.h>
++#if __has_include(<UIKit/UIKit.h>)
++#import <UIKit/UIKit.h>
++#endif
++#endif

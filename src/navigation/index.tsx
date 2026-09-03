@@ -1,6 +1,9 @@
 import {
   createStaticNavigation,
   StaticParamList,
+  DefaultTheme,
+  DarkTheme,
+  Theme,
 } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { BottomTabs } from '@/navigation/BottomTabs';
@@ -8,6 +11,29 @@ import { ConversationScreen } from '@/screens/ConversationScreen';
 import { ContactInfoScreen } from '@/screens/ContactInfoScreen';
 import { DetailsScreen } from '@/screens/DetailsScreen';
 import { ProfileSheet } from '@/screens/ProfileSheet';
+import { colors } from '@/theme';
+
+export const appLightTheme: Theme = {
+  ...DefaultTheme,
+  colors: {
+    ...DefaultTheme.colors,
+    background: colors.light.background,
+    card: colors.light.card,
+    text: colors.light.text,
+    border: colors.light.border,
+  },
+};
+
+export const appDarkTheme: Theme = {
+  ...DarkTheme,
+  colors: {
+    ...DarkTheme.colors,
+    background: colors.dark.background,
+    card: colors.dark.card,
+    text: colors.dark.text,
+    border: colors.dark.border,
+  },
+};
 
 const RootStack = createNativeStackNavigator({
   screens: {

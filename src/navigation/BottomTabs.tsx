@@ -12,6 +12,8 @@ import {
   User,
 } from '@/components/icons';
 
+import { useUniwind } from 'uniwind';
+
 function TabIcon({
   Icon,
   focused,
@@ -23,10 +25,18 @@ function TabIcon({
   color: string;
   fill?: ColorValue;
 }) {
+  const { theme } = useUniwind();
+  const isDark = theme === 'dark';
+
   if (focused) {
     return (
-      <View className="w-14 h-7 rounded-full bg-neutral-100 items-center justify-center">
-        <Icon size={20} color="#171717" fill={fill} strokeWidth={2.2} />
+      <View className="w-14 h-7 rounded-full bg-neutral-100 dark:bg-neutral-800 items-center justify-center">
+        <Icon
+          size={20}
+          color={isDark ? '#FFFFFF' : '#171717'}
+          fill={fill ?? (isDark ? '#FFFFFF' : '#171717')}
+          strokeWidth={2.2}
+        />
       </View>
     );
   }
@@ -34,13 +44,13 @@ function TabIcon({
 }
 
 export const BottomTabs = createBottomTabNavigator({
-  screenOptions: {
+  screenOptions: ({ theme }) => ({
     headerShown: false,
-    tabBarActiveTintColor: '#171717',
+    tabBarActiveTintColor: theme.dark ? '#FFFFFF' : '#171717',
     tabBarInactiveTintColor: '#8E8E93',
     tabBarStyle: {
-      backgroundColor: '#FFFFFF',
-      borderTopColor: '#F3F4F6',
+      backgroundColor: theme.dark ? '#1E1E1E' : '#FFFFFF',
+      borderTopColor: theme.dark ? '#2C2C2C' : '#F3F4F6',
       borderTopWidth: 1,
       elevation: 0,
     },
@@ -49,7 +59,7 @@ export const BottomTabs = createBottomTabNavigator({
       fontWeight: '600',
       marginTop: 2,
     },
-  },
+  }),
   screens: {
     Chats: {
       screen: ChatScreen,

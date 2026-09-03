@@ -1,7 +1,7 @@
 import React from 'react';
 import { Text, View } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
-import { AnimatedButton } from '@/components/AnimatedButton';
+import { AnimatedButton } from '@/components';
 
 export function ProfileSheet() {
   const navigation = useNavigation();

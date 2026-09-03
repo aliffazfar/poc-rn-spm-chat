@@ -7,6 +7,7 @@ import {
   Switch,
 } from 'react-native';
 import TurboImage from 'react-native-turbo-image';
+import { Avatar } from '@/components';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useNavigation } from '@react-navigation/native';
 import {
@@ -56,15 +57,11 @@ export function ContactInfoScreen() {
       >
         {/* Profile Card */}
         <View className="items-center mt-4 mb-6">
-          <TurboImage
-            source={{
-              uri: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80',
-            }}
-            style={{ width: 96, height: 96, backgroundColor: '#E5E5E5' }}
-            resize={300}
-            resizeMode="cover"
-            rounded
-            fadeDuration={0}
+          <Avatar
+            uri="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=300&auto=format&fit=crop&q=80"
+            name="Jonathan"
+            size={96}
+            isOnline
           />
           <Text className="text-2xl font-bold text-neutral-900 mt-3">
             Jonathan
@@ -105,17 +102,29 @@ export function ContactInfoScreen() {
               Media, Links, Docs
             </Text>
             <View className="flex-row items-center gap-1">
-              <Text className="text-sm font-semibold text-neutral-800">275</Text>
+              <Text className="text-sm font-semibold text-neutral-800">
+                275
+              </Text>
               <ChevronRight size={16} color="#171717" strokeWidth={2} />
             </View>
           </View>
 
-          <ScrollView horizontal showsHorizontalScrollIndicator={false} className="flex-row gap-3">
+          <ScrollView
+            horizontal
+            showsHorizontalScrollIndicator={false}
+            className="flex-row gap-3"
+          >
             {MEDIA_THUMBNAILS.map((uri, idx) => (
               <TurboImage
                 key={idx}
                 source={{ uri }}
-                style={{ width: 96, height: 96, marginRight: 10, borderRadius: 16, backgroundColor: '#F5F5F5' }}
+                style={{
+                  width: 96,
+                  height: 96,
+                  marginRight: 10,
+                  borderRadius: 16,
+                  backgroundColor: '#F5F5F5',
+                }}
                 resize={300}
                 resizeMode="cover"
                 fadeDuration={0}
@@ -148,7 +157,9 @@ export function ContactInfoScreen() {
             <Text className="text-base font-semibold text-neutral-800 ml-4 flex-1">
               Starred Messages
             </Text>
-            <Text className="text-sm font-medium text-neutral-400 mr-2">19</Text>
+            <Text className="text-sm font-medium text-neutral-400 mr-2">
+              19
+            </Text>
           </Pressable>
 
           {/* Lock Message */}

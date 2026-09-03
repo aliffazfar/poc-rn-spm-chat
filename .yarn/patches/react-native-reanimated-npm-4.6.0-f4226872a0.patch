@@ -1,22 +1,11 @@
 diff --git a/Package.swift b/Package.swift
 new file mode 100644
-index 0000000000000000000000000000000000000000..099508bdb2744cb2938fa521ff7dc17aecf9f151
+index 0000000000000000000000000000000000000000..4f4717f8fdaa23439fe7e99639474854d994dac3
 --- /dev/null
 +++ b/Package.swift
-@@ -0,0 +1,323 @@
+@@ -0,0 +1,312 @@
 +// swift-tools-version: 6.0
-+// AUTO-SCAFFOLDED by react-native spm scaffold — safe to edit & commit via patch-package.
-+// AUTO-SCAFFOLDED-VERSION: 19
-+// Cache slot: 0.87.1/dual-flavor
-+// Edit the contents below if needed and re-run `npx patch-package <dep-name>`
-+// to persist across `npm install`. To regenerate from the podspec, remove
-+// this file (or just this marker) and re-run `npx react-native spm scaffold`.
-+//
-+// Package references are plain relative paths, computed when this file was
-+// scaffolded. They stay correct because the file is re-scaffolded per app
-+// and cache slot, and any node_modules relayout reinstalls this package
-+// (dropping the file) anyway.
-+
++// Self-managed Swift Package Manager manifest.
 +import PackageDescription
 +
 +let package = Package(
@@ -36,11 +25,6 @@ index 0000000000000000000000000000000000000000..099508bdb2744cb2938fa521ff7dc17a
 +            dependencies: [.product(name: "ReactHeaders", package: "ReactNative"), .product(name: "ReactNativeHeaders", package: "ReactNative"), .product(name: "ReactNativeDependenciesHeaders", package: "ReactNative"), .product(name: "ReactAppHeaders", package: "React-GeneratedCode"), .product(name: "ReactNativeWorklets", package: "ReactNativeWorklets")],
 +            path: ".",
 +            sources: [
-+                "Common/NativeView/react/renderer/components/rnreanimated/ComponentDescriptors.h",
-+                "Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryComponentDescriptor.h",
-+                "Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryShadowNode.cpp",
-+                "Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryShadowNode.h",
-+                "Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryState.h",
 +                "Common/cpp/reanimated/AnimatedSensor/AnimatedSensorModule.cpp",
 +                "Common/cpp/reanimated/AnimatedSensor/AnimatedSensorModule.h",
 +                "Common/cpp/reanimated/CSS/InterpolatorRegistry.cpp",
@@ -278,6 +262,11 @@ index 0000000000000000000000000000000000000000..099508bdb2744cb2938fa521ff7dc17a
 +                "Common/cpp/reanimated/Tools/ReanimatedVersion.cpp",
 +                "Common/cpp/reanimated/Tools/ReanimatedVersion.h",
 +                "Common/cpp/reanimated/Tools/SingleInstanceChecker.h",
++                "Common/NativeView/react/renderer/components/rnreanimated/ComponentDescriptors.h",
++                "Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryComponentDescriptor.h",
++                "Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryShadowNode.cpp",
++                "Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryShadowNode.h",
++                "Common/NativeView/react/renderer/components/rnreanimated/REASharedTransitionBoundaryState.h",
 +                "apple/reanimated/apple/CSS/REACSSPlatformProps.h",
 +                "apple/reanimated/apple/CSS/REACSSPlatformProps.mm",
 +                "apple/reanimated/apple/CSS/REACSSPlatformTransitions.h",
@@ -327,66 +316,6 @@ index 0000000000000000000000000000000000000000..099508bdb2744cb2938fa521ff7dc17a
 +    ],
 +    cxxLanguageStandard: .cxx20
 +)
-diff --git a/android/build.gradle.kts b/android/build.gradle.kts
-index 8dc918d180a09ac32cc87eda455f2e781ff46ab3..1104431478133bacb4a331f9c29d53fd8cbbd084 100644
---- a/android/build.gradle.kts
-+++ b/android/build.gradle.kts
-@@ -36,6 +36,19 @@ fun safeAppExtGet(prop: String, fallback: Any?): Any? {
-         fallback
- }
- 
-+fun resolveNodeExecutable(): String {
-+    val nodeFromEnv = System.getenv("NODE_BINARY")
-+    if (!nodeFromEnv.isNullOrEmpty() && file(nodeFromEnv).exists()) {
-+        return nodeFromEnv
-+    }
-+    val fallbackCandidates = listOf(
-+        "/opt/homebrew/bin/node",
-+        "/usr/local/bin/node",
-+        "/usr/bin/node"
-+    )
-+    return fallbackCandidates.firstOrNull { file(it).exists() } ?: "node"
-+}
-+
- fun resolveReactNativeDirectory(): File {
-     val reactNativeLocationProperty = safeAppExtGet("REACT_NATIVE_NODE_MODULES_DIR", null)
-     if (reactNativeLocationProperty != null) {
-@@ -46,11 +59,16 @@ fun resolveReactNativeDirectory(): File {
-         }
-     }
- 
-+    val standardRnDirFile = file("$rootDir/../node_modules/react-native")
-+    if (standardRnDirFile.exists()) {
-+        return standardRnDirFile
-+    }
-+
-     // Fallback to node resolver for custom directory structures like monorepos.
-     val reactNativePackage = file(
-         providers.exec {
-             workingDir(rootDir)
--            commandLine("node", "--print", "require.resolve('react-native/package.json')")
-+            commandLine(resolveNodeExecutable(), "--print", "require.resolve('react-native/package.json')")
-         }.standardOutput.asText.get().trim()
-     )
-     if (reactNativePackage.exists()) {
-@@ -290,7 +308,7 @@ androidComponents {
- 
- val validateReactNativeVersionResult = providers.exec {
-     workingDir(projectDir.path)
--    commandLine("node", "./../scripts/validate-react-native-version.js", REACT_NATIVE_VERSION)
-+    commandLine(resolveNodeExecutable(), "./../scripts/validate-react-native-version.js", REACT_NATIVE_VERSION)
-     isIgnoreExitValue = true
- }
- 
-@@ -307,7 +325,7 @@ tasks.named("preBuild") { dependsOn("assertMinimalReactNativeVersionTask") }
- 
- val validateWorkletsBuildResult = providers.exec {
-     workingDir(projectDir.path)
--    commandLine("node", "./../scripts/validate-worklets-build.js")
-+    commandLine(resolveNodeExecutable(), "./../scripts/validate-worklets-build.js")
-     isIgnoreExitValue = true
- }
- 
 diff --git a/react-native-spm-prefix.h b/react-native-spm-prefix.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..af5cea0557f2f4aa957419f0fc3f250fd55dbaf5
