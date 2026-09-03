@@ -1,20 +1,20 @@
-import React from 'react';
-import { View, Text, Pressable } from 'react-native';
-import { Avatar, AvatarSize } from '../atoms/Avatar';
-import { Check, CheckCheck } from '@/components/icons';
+import React from 'react'
+import { View, Text, Pressable } from 'react-native'
+import { Avatar, AvatarSize } from '../atoms/Avatar'
+import { Check, CheckCheck } from '@/components/icons'
 
 export interface ChatCardProps {
-  id?: string | number;
-  avatar?: string;
-  name: string;
-  message?: string;
-  time?: string;
-  unreadCount?: number;
-  status?: 'sent' | 'delivered' | 'read' | 'none';
-  isOnline?: boolean;
-  avatarSize?: AvatarSize | number;
-  onPress?: () => void;
-  className?: string;
+  id?: string | number
+  avatar?: string
+  name: string
+  message?: string
+  time?: string
+  unreadCount?: number
+  status?: 'sent' | 'delivered' | 'read' | 'none'
+  isOnline?: boolean
+  avatarSize?: AvatarSize | number
+  onPress?: () => void
+  className?: string
 }
 
 export function ChatCard({
@@ -70,5 +70,5 @@ export function ChatCard({
         </View>
       </View>
     </Pressable>
-  );
+  )
 }

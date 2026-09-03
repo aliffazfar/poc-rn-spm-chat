@@ -1,4 +1,4 @@
 export interface EnvItem {
-  label: string;
-  value: string | undefined;
+  label: string
+  value: string | undefined
 }

@@ -1,6 +1,6 @@
-import React from 'react';
-import { Text, View } from 'react-native';
-import { APP_NAME, ENVIRONMENT } from '@env';
+import React from 'react'
+import { Text, View } from 'react-native'
+import { APP_NAME, ENVIRONMENT } from '@env'
 
 export function Header() {
   return (
@@ -19,5 +19,5 @@ export function Header() {
         React Native 0.87 · SwiftPM · Uniwind Tailwind v4 · Reanimated 4
       </Text>
     </View>
-  );
+  )
 }

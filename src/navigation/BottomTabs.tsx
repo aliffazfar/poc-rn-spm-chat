@@ -1,18 +1,13 @@
-import React from 'react';
-import { type ColorValue, View } from 'react-native';
-import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { ChatScreen } from '@/screens/ChatScreen';
-import { StatusScreen } from '@/screens/StatusScreen';
-import { CallsScreen } from '@/screens/CallsScreen';
-import { AccountScreen } from '@/screens/AccountScreen';
-import {
-  MessageSquare,
-  Radio,
-  Phone,
-  User,
-} from '@/components/icons';
+import React from 'react'
+import { type ColorValue, View } from 'react-native'
+import { createBottomTabNavigator } from '@react-navigation/bottom-tabs'
+import { ChatScreen } from '@/screens/chat'
+import { StatusScreen } from '@/screens/status'
+import { CallsScreen } from '@/screens/calls'
+import { AccountScreen } from '@/screens/account'
+import { MessageSquare, Radio, Phone, User } from '@/components/icons'
 
-import { useUniwind } from 'uniwind';
+import { useAppTheme } from '@/hooks'
 
 function TabIcon({
   Icon,
@@ -20,13 +15,12 @@ function TabIcon({
   color,
   fill,
 }: {
-  Icon: any;
-  focused: boolean;
-  color: string;
-  fill?: ColorValue;
+  Icon: any
+  focused: boolean
+  color: string
+  fill?: ColorValue
 }) {
-  const { theme } = useUniwind();
-  const isDark = theme === 'dark';
+  const { isDark } = useAppTheme()
 
   if (focused) {
     return (
@@ -38,9 +32,9 @@ function TabIcon({
           strokeWidth={2.2}
         />
       </View>
-    );
+    )
   }
-  return <Icon size={22} color={color} strokeWidth={1.75} />;
+  return <Icon size={22} color={color} strokeWidth={1.75} />
 }
 
 export const BottomTabs = createBottomTabNavigator({
@@ -103,4 +97,4 @@ export const BottomTabs = createBottomTabNavigator({
       },
     },
   },
-});
+})

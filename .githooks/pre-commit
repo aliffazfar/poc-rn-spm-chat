@@ -1,0 +1,4 @@
+#!/bin/sh
+# Automatically format all staged files with Prettier
+yarn format
+git update-index --again

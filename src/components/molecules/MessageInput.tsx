@@ -1,19 +1,25 @@
-import React from 'react';
-import { View, TextInput, Pressable, ActivityIndicator } from 'react-native';
-import { Plus, Smile, SendHorizontal } from '@/components/icons';
+import React, { useState, useEffect } from 'react'
+import {
+  View,
+  Pressable,
+  ActivityIndicator,
+  Keyboard,
+  Platform,
+} from 'react-native'
+import { Plus, Smile, SendHorizontal } from '@/components/icons'
+import { Input } from '@/components/atoms'
+import { useAppTheme } from '@/hooks'
 
 export interface MessageInputProps {
-  value: string;
-  onChangeText: (text: string) => void;
-  onSend: () => void;
-  onPressPlus?: () => void;
-  onPressSmile?: () => void;
-  isSending?: boolean;
-  placeholder?: string;
-  bottomInset?: number;
+  value: string
+  onChangeText: (text: string) => void
+  onSend: () => void
+  onPressPlus?: () => void
+  onPressSmile?: () => void
+  isSending?: boolean
+  placeholder?: string
+  bottomInset?: number
 }
-
-import { useUniwind } from 'uniwind';
 
 export function MessageInput({
   value,
@@ -23,21 +29,41 @@ export function MessageInput({
   onPressSmile,
   isSending = false,
   placeholder = 'Message...',
-  bottomInset = 12,
 }: MessageInputProps) {
-  const { theme } = useUniwind();
-  const isDark = theme === 'dark';
-  const canSend = value.trim().length > 0 && !isSending;
+  const { isDark } = useAppTheme()
+  const [isKeyboardVisible, setKeyboardVisible] = useState(false)
+
+  useEffect(() => {
+    const showEvent =
+      Platform.OS === 'ios' ? 'keyboardWillShow' : 'keyboardDidShow'
+    const hideEvent =
+      Platform.OS === 'ios' ? 'keyboardWillHide' : 'keyboardDidHide'
+
+    const showSub = Keyboard.addListener(showEvent, () =>
+      setKeyboardVisible(true),
+    )
+    const hideSub = Keyboard.addListener(hideEvent, () =>
+      setKeyboardVisible(false),
+    )
+
+    return () => {
+      showSub.remove()
+      hideSub.remove()
+    }
+  }, [])
+
+  const canSend = value.trim().length > 0 && !isSending
 
   return (
     <View
-      className="flex-row items-center px-4 py-2 bg-white dark:bg-[#1E1E1E] border-t border-neutral-100 dark:border-neutral-800 gap-2.5"
-      style={{ paddingBottom: Math.max(bottomInset, 12) }}
+      className={`flex-row items-center px-5 pt-2 bg-white dark:bg-[#1E1E1E] border-t border-neutral-100 dark:border-neutral-800 gap-2.5 ${
+        isKeyboardVisible ? 'pb-2' : 'pb-safe-offset-2'
+      }`}
     >
       <Pressable
         onPress={onPressPlus}
         hitSlop={8}
-        className="p-1 active:opacity-60"
+        className="-ml-1 p-1 active:opacity-60"
       >
         <Plus
           size={26}
@@ -46,14 +72,13 @@ export function MessageInput({
         />
       </Pressable>
 
-      <View className="flex-1 flex-row items-center bg-neutral-100 dark:bg-[#282828] rounded-full px-4 py-2">
-        <TextInput
+      <View className="flex-1 flex-row items-center bg-neutral-100 dark:bg-[#282828] rounded-full px-4 py-1.5 min-h-[42px]">
+        <Input
           value={value}
           onChangeText={onChangeText}
           onSubmitEditing={onSend}
-          className="flex-1 text-base text-neutral-900 dark:text-white p-0"
+          className="flex-1"
           placeholder={placeholder}
-          placeholderTextColorClassName="accent-neutral-400 dark:accent-neutral-500"
         />
         <Pressable
           onPress={onPressSmile}
@@ -91,5 +116,5 @@ export function MessageInput({
         )}
       </Pressable>
     </View>
-  );
+  )
 }

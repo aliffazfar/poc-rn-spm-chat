@@ -1,23 +1,24 @@
-import React from 'react';
-import { View, Text, ViewStyle, StyleProp } from 'react-native';
-import TurboImage from 'react-native-turbo-image';
+import React from 'react'
+import { View, Text, ViewStyle, StyleProp } from 'react-native'
+import TurboImage from 'react-native-turbo-image'
 
-export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl';
+export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl'
 
 const SIZE_MAP: Record<AvatarSize, number> = {
   sm: 36,
   md: 48,
   lg: 56,
   xl: 80,
-};
+}
 
 export interface AvatarProps {
-  uri?: string;
-  name?: string;
-  size?: AvatarSize | number;
-  isOnline?: boolean;
-  className?: string;
-  style?: StyleProp<ViewStyle>;
+  uri?: string
+  name?: string
+  size?: AvatarSize | number
+  isOnline?: boolean
+  className?: string
+  style?: StyleProp<ViewStyle>
+  blurhash?: string
 }
 
 export function Avatar({
@@ -27,9 +28,10 @@ export function Avatar({
   isOnline,
   className = '',
   style,
+  blurhash,
 }: AvatarProps) {
-  const dimension = typeof size === 'number' ? size : SIZE_MAP[size];
-  const radius = dimension / 2;
+  const dimension = typeof size === 'number' ? size : SIZE_MAP[size]
+  const radius = dimension / 2
 
   const initials = name
     ? name
@@ -38,7 +40,7 @@ export function Avatar({
         .slice(0, 2)
         .join('')
         .toUpperCase()
-    : '';
+    : ''
 
   return (
     <View
@@ -48,6 +50,7 @@ export function Avatar({
       {uri ? (
         <TurboImage
           source={{ uri }}
+          placeholder={blurhash ? { blurhash } : undefined}
           style={{
             width: dimension,
             height: dimension,
@@ -57,11 +60,15 @@ export function Avatar({
           resize={dimension * 2}
           resizeMode="cover"
           rounded
-          fadeDuration={0}
+          fadeDuration={blurhash ? 250 : 0}
         />
       ) : (
         <View
-          style={{ width: dimension, height: dimension, borderRadius: radius }}
+          style={{
+            width: dimension,
+            height: dimension,
+            borderRadius: radius,
+          }}
           className="bg-neutral-200 dark:bg-neutral-800 items-center justify-center"
         >
           <Text
@@ -86,5 +93,5 @@ export function Avatar({
         />
       )}
     </View>
-  );
+  )
 }

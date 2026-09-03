@@ -1,9 +1,9 @@
-import React from 'react';
-import { Text, View } from 'react-native';
-import { EnvItem } from '@/types';
+import React from 'react'
+import { Text, View } from 'react-native'
+import { EnvItem } from '@/types'
 
 interface EnvCardProps {
-  items: EnvItem[];
+  items: EnvItem[]
 }
 
 export function EnvCard({ items }: EnvCardProps) {
@@ -13,7 +13,7 @@ export function EnvCard({ items }: EnvCardProps) {
         Loaded Environment Config
       </Text>
       <View className="gap-3">
-        {items.map(item => (
+        {items.map((item) => (
           <View
             key={item.label}
             className="flex-row justify-between items-center py-1 border-b border-neutral-100 dark:border-neutral-800 last:border-b-0"
@@ -28,5 +28,5 @@ export function EnvCard({ items }: EnvCardProps) {
         ))}
       </View>
     </View>
-  );
+  )
 }

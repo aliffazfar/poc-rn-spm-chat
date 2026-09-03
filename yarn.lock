@@ -2005,6 +2005,22 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@legendapp/list@npm:^3.3.10":
+  version: 3.3.10
+  resolution: "@legendapp/list@npm:3.3.10"
+  dependencies:
+    use-sync-external-store: "npm:^1.5.0"
+  peerDependencies:
+    react: "*"
+  peerDependenciesMeta:
+    react-dom:
+      optional: true
+    react-native:
+      optional: true
+  checksum: 10c0/227bcd35c8796ab64d8ceb80802808d280b94200315e65b258f4ad16e04da0a9ab49bd0f431850c4e87a7593e389f8cadff47cb312f40ebd01996774984caa44
+  languageName: node
+  linkType: hard
+
 "@napi-rs/wasm-runtime@npm:^1.1.4":
   version: 1.2.3
   resolution: "@napi-rs/wasm-runtime@npm:1.2.3"
@@ -2688,6 +2704,21 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@rozenite/react-navigation-plugin@npm:^2.3.0":
+  version: 2.3.0
+  resolution: "@rozenite/react-navigation-plugin@npm:2.3.0"
+  dependencies:
+    "@rozenite/agent-bridge": "npm:2.3.0"
+    "@rozenite/agent-shared": "npm:2.3.0"
+    "@rozenite/plugin-bridge": "npm:2.3.0"
+    "@rozenite/ui": "npm:2.3.0"
+    fast-deep-equal: "npm:^3.1.3"
+  peerDependencies:
+    "@react-navigation/core": ^7.12.1
+  checksum: 10c0/d6a14fb85824997510dfb949f8c93cf5e22e07ae49c9931a315e9d73056f51dda7da309a04c2b895bb30e0eff34e0f0f1d6c64ef4e2482365e6b2481bebad6b2
+  languageName: node
+  linkType: hard
+
 "@rozenite/runtime@npm:2.3.0":
   version: 2.3.0
   resolution: "@rozenite/runtime@npm:2.3.0"
@@ -3352,6 +3383,7 @@ __metadata:
     "@babel/core": "npm:^7.25.2"
     "@babel/preset-env": "npm:^7.25.3"
     "@babel/runtime": "npm:^7.25.0"
+    "@legendapp/list": "npm:^3.3.10"
     "@react-native-community/cli": "npm:20.2.0"
     "@react-native-community/cli-platform-android": "npm:20.2.0"
     "@react-native-community/cli-platform-ios": "npm:20.2.0"
@@ -3365,6 +3397,7 @@ __metadata:
     "@react-navigation/native-stack": "npm:^7.18.10"
     "@rozenite/expo-atlas-plugin": "npm:^2.3.0"
     "@rozenite/metro": "npm:^2.3.0"
+    "@rozenite/react-navigation-plugin": "npm:^2.3.0"
     "@rozenite/storage-plugin": "npm:^2.3.0"
     "@rozenite/tanstack-query-plugin": "npm:^2.3.0"
     "@tanstack/query-async-storage-persister": "npm:^5.102.8"
@@ -3376,7 +3409,7 @@ __metadata:
     babel-plugin-module-resolver: "npm:^5.0.3"
     eslint: "npm:^8.19.0"
     jest: "npm:^29.6.3"
-    prettier: "npm:2.8.8"
+    prettier: "npm:^3.9.6"
     react: "npm:19.2.3"
     react-native: "npm:0.87.1"
     react-native-dotenv: "npm:^4.1.1"
@@ -8623,12 +8656,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"prettier@npm:2.8.8":
-  version: 2.8.8
-  resolution: "prettier@npm:2.8.8"
+"prettier@npm:^3.9.6":
+  version: 3.9.6
+  resolution: "prettier@npm:3.9.6"
   bin:
-    prettier: bin-prettier.js
-  checksum: 10c0/463ea8f9a0946cd5b828d8cf27bd8b567345cf02f56562d5ecde198b91f47a76b7ac9eae0facd247ace70e927143af6135e8cf411986b8cb8478784a4d6d724a
+    prettier: bin/prettier.cjs
+  checksum: 10c0/9f7ddae234035868f3daab3dc34e6de7e54622185afb017378029f0c09a9c023248ccf6f34def0b17a0538e18c47aa1b3188bab72965d1bf735919baa0747e99
   languageName: node
   linkType: hard
 
@@ -8894,11 +8927,11 @@ __metadata:
 
 "react-native-nitro-modules@patch:react-native-nitro-modules@npm%3A0.37.1#~/.yarn/patches/react-native-nitro-modules-npm-0.37.1-d46109edee.patch":
   version: 0.37.1
-  resolution: "react-native-nitro-modules@patch:react-native-nitro-modules@npm%3A0.37.1#~/.yarn/patches/react-native-nitro-modules-npm-0.37.1-d46109edee.patch::version=0.37.1&hash=dd500b"
+  resolution: "react-native-nitro-modules@patch:react-native-nitro-modules@npm%3A0.37.1#~/.yarn/patches/react-native-nitro-modules-npm-0.37.1-d46109edee.patch::version=0.37.1&hash=29dae5"
   peerDependencies:
     react: "*"
     react-native: "*"
-  checksum: 10c0/021132f58d74de75de91dff93653d600f7dd1c334724b59cd4b60542343f96687898df4642b6e21c6716d78b82fc158c3186b817940cade7400b73b14d7fba87
+  checksum: 10c0/35481b84af0a55d66665c6105f7a0ef1e881d778e0e70711fda3f3b8d10092ad0c44eaca3f51cac026bfb780f1ca6d365a8c30405164be1e164f857f24d1bb52
   languageName: node
   linkType: hard
 

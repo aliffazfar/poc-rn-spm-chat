@@ -1,24 +1,21 @@
-import React, { useState, useMemo } from 'react';
-import {
-  View,
-  Text,
-  FlatList,
-  Pressable,
-  ActivityIndicator,
-} from 'react-native';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNavigation } from '@react-navigation/native';
-import { Camera, EllipsisVertical, Archive } from '@/components/icons';
-import { SearchBar, ChatCard } from '@/components';
-import { useChatStore } from '@/store';
-import { useInfiniteUsers } from '@/api';
-import { useUniwind } from 'uniwind';
+import React, { useState, useMemo } from 'react'
+import { View, Text, Pressable, ActivityIndicator } from 'react-native'
+import { useNavigation } from '@react-navigation/native'
+import { Camera, EllipsisVertical, Archive } from '@/components/icons'
+import { Screen, SearchBar, ChatCard, ChatCardSkeleton } from '@/components'
+import { useChatStore } from '@/store'
+import { useAppTheme } from '@/hooks'
+import { useInfiniteUsers, postKeys } from '@/api'
+import { useQueryClient } from '@tanstack/react-query'
+import { LegendList } from '@legendapp/list/react-native'
+import { getInitialLastMessage } from './mock'
 
 export function ChatScreen() {
-  const insets = useSafeAreaInsets();
-  const navigation = useNavigation<any>();
-  const { activeFilter, setActiveFilter } = useChatStore();
-  const [searchQuery, setSearchQuery] = useState('');
+  const navigation = useNavigation<any>()
+  const queryClient = useQueryClient()
+  const { activeFilter, setActiveFilter } = useChatStore()
+  const { colors } = useAppTheme()
+  const [searchQuery, setSearchQuery] = useState('')
 
   const {
     data,
@@ -28,27 +25,21 @@ export function ChatScreen() {
     hasNextPage,
     fetchNextPage,
     refetch,
-  } = useInfiniteUsers(searchQuery);
+  } = useInfiniteUsers(searchQuery)
 
   const users = useMemo(() => {
-    const all = data?.pages.flatMap(page => page.results) ?? [];
+    const all = data?.pages.flatMap((page) => page.results) ?? []
     if (activeFilter === 'unread') {
-      return all.filter(u => u.id % 2 === 1);
+      return all.filter((u) => u.id % 2 === 1)
     }
     if (activeFilter === 'group') {
-      return all.filter(u => u.id % 3 === 0);
+      return all.filter((u) => u.id % 3 === 0)
     }
-    return all;
-  }, [data, activeFilter]);
-
-  const { theme } = useUniwind();
-  const isDark = theme === 'dark';
+    return all
+  }, [data, activeFilter])
 
   return (
-    <View
-      className="flex-1 bg-white dark:bg-[#1E1E1E]"
-      style={{ paddingTop: insets.top }}
-    >
+    <Screen>
       {/* Top Header */}
       <View className="flex-row items-center justify-between px-5 pt-3 pb-2">
         <Text className="text-3xl font-extrabold text-neutral-900 dark:text-white tracking-tight">
@@ -56,16 +47,12 @@ export function ChatScreen() {
         </Text>
         <View className="flex-row items-center gap-5">
           <Pressable hitSlop={10} className="active:opacity-60">
-            <Camera
-              size={24}
-              color={isDark ? '#FFFFFF' : '#171717'}
-              strokeWidth={1.75}
-            />
+            <Camera size={24} color={colors.text} strokeWidth={1.75} />
           </Pressable>
           <Pressable hitSlop={10} className="active:opacity-60">
             <EllipsisVertical
               size={24}
-              color={isDark ? '#FFFFFF' : '#171717'}
+              color={colors.text}
               strokeWidth={1.75}
             />
           </Pressable>
@@ -145,43 +132,40 @@ export function ChatScreen() {
       </View>
 
       {/* Archived Row */}
-      <Pressable className="flex-row items-center justify-between px-5 py-3 border-b border-neutral-100 dark:border-neutral-800/80 active:bg-neutral-50 dark:active:bg-neutral-800/50">
-        <View className="flex-row items-center gap-3.5">
-          <Archive
-            size={20}
-            color={isDark ? '#A3A3A3' : '#171717'}
-            strokeWidth={1.75}
-          />
-          <Text className="text-base font-semibold text-neutral-900 dark:text-white">
+      <Pressable className="flex-row items-center justify-between px-5 py-2.5 border-b border-neutral-100 dark:border-neutral-800/60 active:bg-neutral-50 dark:active:bg-neutral-800/50">
+        <View className="flex-row items-center">
+          <View className="w-[52px] items-center justify-center">
+            <Archive size={18} color={colors.textMuted} strokeWidth={1.5} />
+          </View>
+          <Text className="ml-3.5 text-sm font-medium text-neutral-600 dark:text-neutral-400">
             Archived
           </Text>
         </View>
-        <Text className="text-sm font-medium text-neutral-400 dark:text-neutral-500">
+        <Text className="text-xs font-medium text-neutral-400 dark:text-neutral-500">
           13
         </Text>
       </Pressable>
 
       {/* Chat List */}
-      <FlatList
+      <LegendList
         data={users}
-        keyExtractor={item => String(item.id)}
+        keyExtractor={(item) => String(item.id)}
+        recycleItems
+        estimatedItemSize={76}
         showsVerticalScrollIndicator={false}
-        contentContainerClassName="pb-20"
+        contentContainerStyle={{ paddingBottom: 80 }}
         onRefresh={refetch}
         refreshing={isRefetching}
         onEndReached={() => {
           if (hasNextPage && !isFetchingNextPage) {
-            fetchNextPage();
+            fetchNextPage()
           }
         }}
         onEndReachedThreshold={0.4}
         ListFooterComponent={
           isFetchingNextPage ? (
             <View className="py-4 items-center">
-              <ActivityIndicator
-                size="small"
-                color={isDark ? '#FFFFFF' : '#171717'}
-              />
+              <ActivityIndicator size="small" color={colors.primary} />
             </View>
           ) : undefined
         }
@@ -193,37 +177,56 @@ export function ChatScreen() {
               </Text>
             </View>
           ) : (
-            <View className="items-center justify-center py-16">
-              <ActivityIndicator
-                size="large"
-                color={isDark ? '#FFFFFF' : '#171717'}
-              />
+            <View className="pt-1">
+              {Array.from({ length: 8 }).map((_, i) => (
+                <ChatCardSkeleton key={i} />
+              ))}
             </View>
           )
         }
-        renderItem={({ item, index }) => (
-          <ChatCard
-            id={item.id}
-            avatar={item.avatar}
-            name={item.name}
-            time={`08:${String(10 + (index % 50)).padStart(2, '0')}`}
-            message={
-              item.address
-                ? `${item.address.city} • @${item.username}`
-                : item.email
-            }
-            unreadCount={index % 3 === 0 ? (index % 4) + 1 : undefined}
-            status={index % 2 === 0 ? 'delivered' : 'sent'}
-            onPress={() =>
-              navigation.navigate('Conversation', {
-                chatId: item.id,
-                name: item.name,
-                avatar: item.avatar,
+        renderItem={({ item, index }) => {
+          const cachedComments = queryClient.getQueryData<any[]>(
+            postKeys.comments(item.id),
+          )
+          const lastComment =
+            cachedComments && cachedComments.length > 0
+              ? cachedComments[cachedComments.length - 1]
+              : null
+
+          const initial = getInitialLastMessage(item.id)
+
+          const messageText =
+            lastComment?.body && lastComment.body.length > 0
+              ? lastComment.body
+              : lastComment?.imageUrl
+                ? '📷 Photo'
+                : initial.message
+
+          const messageTime = lastComment?.createdAt
+            ? new Date(lastComment.createdAt).toLocaleTimeString([], {
+                hour: '2-digit',
+                minute: '2-digit',
               })
-            }
-          />
-        )}
+            : initial.time
+
+          return (
+            <ChatCard
+              id={item.id}
+              avatar={item.avatar}
+              name={item.name}
+              time={messageTime}
+              message={messageText}
+              unreadCount={index % 3 === 0 ? (index % 4) + 1 : undefined}
+              status={index % 2 === 0 ? 'delivered' : 'sent'}
+              onPress={() =>
+                navigation.navigate('Conversation', {
+                  chatId: item.id,
+                })
+              }
+            />
+          )
+        }}
       />
-    </View>
-  );
+    </Screen>
+  )
 }

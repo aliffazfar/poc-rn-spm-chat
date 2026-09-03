@@ -1,1 +1,2 @@
-export * from './useAppInit';
+export * from './useAppInit'
+export * from './useAppTheme'

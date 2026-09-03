@@ -4,14 +4,13 @@ import {
   DefaultTheme,
   DarkTheme,
   Theme,
-} from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
-import { BottomTabs } from '@/navigation/BottomTabs';
-import { ConversationScreen } from '@/screens/ConversationScreen';
-import { ContactInfoScreen } from '@/screens/ContactInfoScreen';
-import { DetailsScreen } from '@/screens/DetailsScreen';
-import { ProfileSheet } from '@/screens/ProfileSheet';
-import { colors } from '@/theme';
+} from '@react-navigation/native'
+import { createNativeStackNavigator } from '@react-navigation/native-stack'
+import { BottomTabs } from '@/navigation/BottomTabs'
+import { ConversationScreen, ContactInfoScreen } from '@/screens/chat'
+import { DetailsScreen } from '@/screens/home'
+import { ProfileSheet } from '@/screens/account'
+import { colors } from '@/theme'
 
 export const appLightTheme: Theme = {
   ...DefaultTheme,
@@ -22,7 +21,7 @@ export const appLightTheme: Theme = {
     text: colors.light.text,
     border: colors.light.border,
   },
-};
+}
 
 export const appDarkTheme: Theme = {
   ...DarkTheme,
@@ -33,7 +32,7 @@ export const appDarkTheme: Theme = {
     text: colors.dark.text,
     border: colors.dark.border,
   },
-};
+}
 
 const RootStack = createNativeStackNavigator({
   screens: {
@@ -68,16 +67,17 @@ const RootStack = createNativeStackNavigator({
       options: {
         presentation: 'formSheet',
         headerShown: false,
-        sheetAllowedDetents: 'fitToContents',
+        sheetAllowedDetents: [0.75, 1.0] as any,
         sheetGrabberVisible: true,
+        sheetCornerRadius: 28,
       },
     },
   },
-});
+})
 
-export const Navigation = createStaticNavigation(RootStack);
+export const Navigation = createStaticNavigation(RootStack)
 
-type RootStackParamList = StaticParamList<typeof RootStack>;
+type RootStackParamList = StaticParamList<typeof RootStack>
 
 declare global {
   namespace ReactNavigation {
