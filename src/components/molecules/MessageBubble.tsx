@@ -1,7 +1,8 @@
 import React from 'react'
-import { View, Text } from 'react-native'
+import { View, Text, Pressable } from 'react-native'
 import TurboImage from 'react-native-turbo-image'
 import { Play } from '@/components/icons'
+import { useAppTheme } from '@/hooks/useAppTheme'
 
 export interface MessageBubbleProps {
   id?: string | number
@@ -13,6 +14,8 @@ export interface MessageBubbleProps {
   time?: string
   isMe?: boolean
   isSystem?: boolean
+  onPressImage?: () => void
+  onPressAudio?: () => void
 }
 
 export function MessageBubble({
@@ -24,7 +27,12 @@ export function MessageBubble({
   time,
   isMe = false,
   isSystem = false,
+  onPressImage,
+  onPressAudio,
 }: MessageBubbleProps) {
+  const { isDark } = useAppTheme()
+  const playColor = isMe === isDark ? '#FFFFFF' : '#171717'
+
   if (isSystem) {
     return (
       <View className="items-center my-3 px-6">
@@ -54,8 +62,10 @@ export function MessageBubble({
         )}
 
         {imageUrl && (
-          <View
-            className={`rounded-3xl p-1.5 mb-1 ${
+          <Pressable
+            onPress={onPressImage}
+            disabled={!onPressImage}
+            className={`rounded-3xl p-1.5 mb-1 active:opacity-90 ${
               isMe
                 ? 'bg-neutral-900 dark:bg-white rounded-tr-sm'
                 : 'bg-neutral-100 dark:bg-[#282828] rounded-tl-sm'
@@ -79,29 +89,29 @@ export function MessageBubble({
                 {time}
               </Text>
             )}
-          </View>
+          </Pressable>
         )}
 
         {audioDuration && (
           <View
             className={`rounded-3xl px-4 py-3 w-72 mb-1 ${
               isMe
-                ? 'bg-neutral-900 rounded-tr-sm'
-                : 'bg-neutral-100 rounded-tl-sm'
+                ? 'bg-neutral-900 dark:bg-white rounded-tr-sm'
+                : 'bg-neutral-100 dark:bg-[#282828] rounded-tl-sm'
             }`}
           >
             <View className="flex-row items-center gap-3">
-              <View
-                className={`w-8 h-8 rounded-full items-center justify-center ${
-                  isMe ? 'bg-white' : 'bg-neutral-900'
+              <Pressable
+                onPress={onPressAudio}
+                disabled={!onPressAudio}
+                className={`w-8 h-8 rounded-full items-center justify-center active:opacity-75 ${
+                  isMe
+                    ? 'bg-white dark:bg-neutral-900'
+                    : 'bg-neutral-900 dark:bg-white'
                 }`}
               >
-                <Play
-                  size={14}
-                  color={isMe ? '#171717' : '#FFFFFF'}
-                  fill={isMe ? '#171717' : '#FFFFFF'}
-                />
-              </View>
+                <Play size={14} color={playColor} fill={playColor} />
+              </Pressable>
               <View className="flex-1 flex-row items-center gap-0.5 h-6">
                 {[
                   6, 12, 18, 10, 22, 14, 8, 16, 20, 10, 14, 8, 18, 12, 6, 10,
@@ -112,11 +122,11 @@ export function MessageBubble({
                     className={`w-1 rounded-full ${
                       isMe
                         ? i < 6
-                          ? 'bg-white'
-                          : 'bg-neutral-600'
+                          ? 'bg-white dark:bg-neutral-900'
+                          : 'bg-neutral-600 dark:bg-neutral-300'
                         : i < 6
-                          ? 'bg-neutral-900'
-                          : 'bg-neutral-300'
+                          ? 'bg-neutral-900 dark:bg-white'
+                          : 'bg-neutral-300 dark:bg-neutral-600'
                     }`}
                     style={{ height: h }}
                   />
@@ -124,14 +134,16 @@ export function MessageBubble({
               </View>
               <Text
                 className={`text-xs font-semibold ${
-                  isMe ? 'text-neutral-200' : 'text-neutral-700'
+                  isMe
+                    ? 'text-neutral-200 dark:text-neutral-700'
+                    : 'text-neutral-700 dark:text-neutral-300'
                 }`}
               >
                 {audioDuration}
               </Text>
             </View>
             {time && (
-              <Text className="text-[10px] text-neutral-400 text-right mt-1 font-medium">
+              <Text className="text-[10px] text-neutral-400 dark:text-neutral-500 text-right mt-1 font-medium">
                 {time}
               </Text>
             )}

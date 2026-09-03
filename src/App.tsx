@@ -9,6 +9,7 @@ import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client
 import { Navigation, appLightTheme, appDarkTheme } from '@/navigation'
 import { queryClient, clientPersister } from '@/utils/queryClient'
 import { useAppInit } from '@/hooks'
+import { Toaster, ImagePreview } from '@/components'
 
 function AppContent() {
   const { isDark, navigationRef } = useAppInit()
@@ -20,6 +21,8 @@ function AppContent() {
         ref={navigationRef}
         theme={isDark ? appDarkTheme : appLightTheme}
       />
+      <ImagePreview />
+      <Toaster />
     </>
   )
 }

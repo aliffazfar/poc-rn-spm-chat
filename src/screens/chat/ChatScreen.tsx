@@ -2,7 +2,13 @@ import React, { useState, useMemo } from 'react'
 import { View, Text, Pressable, ActivityIndicator } from 'react-native'
 import { useNavigation } from '@react-navigation/native'
 import { Camera, EllipsisVertical, Archive } from '@/components/icons'
-import { Screen, SearchBar, ChatCard, ChatCardSkeleton } from '@/components'
+import {
+  Screen,
+  SearchBar,
+  ChatCard,
+  ChatCardSkeleton,
+  toast,
+} from '@/components'
 import { useChatStore } from '@/store'
 import { useAppTheme } from '@/hooks'
 import { useInfiniteUsers, postKeys } from '@/api'
@@ -46,10 +52,26 @@ export function ChatScreen() {
           Chats
         </Text>
         <View className="flex-row items-center gap-5">
-          <Pressable hitSlop={10} className="active:opacity-60">
+          <Pressable
+            onPress={() =>
+              toast.info('Camera', {
+                description: 'Take photo or record video',
+              })
+            }
+            hitSlop={10}
+            className="active:opacity-60"
+          >
             <Camera size={24} color={colors.text} strokeWidth={1.75} />
           </Pressable>
-          <Pressable hitSlop={10} className="active:opacity-60">
+          <Pressable
+            onPress={() =>
+              toast.info('More options', {
+                description: 'New group, starred messages, settings',
+              })
+            }
+            hitSlop={10}
+            className="active:opacity-60"
+          >
             <EllipsisVertical
               size={24}
               color={colors.text}
@@ -132,7 +154,14 @@ export function ChatScreen() {
       </View>
 
       {/* Archived Row */}
-      <Pressable className="flex-row items-center justify-between px-5 py-2.5 border-b border-neutral-100 dark:border-neutral-800/60 active:bg-neutral-50 dark:active:bg-neutral-800/50">
+      <Pressable
+        onPress={() =>
+          toast.info('Archived chats', {
+            description: '13 archived conversations',
+          })
+        }
+        className="flex-row items-center justify-between px-5 py-2.5 border-b border-neutral-100 dark:border-neutral-800/60 active:bg-neutral-50 dark:active:bg-neutral-800/50"
+      >
         <View className="flex-row items-center">
           <View className="w-[52px] items-center justify-center">
             <Archive size={18} color={colors.textMuted} strokeWidth={1.5} />

@@ -64,6 +64,13 @@ const PATHS = {
     '<path d="m4 4 11.73 16h4.27L8.27 4z"/><path d="m4 20 6.77-6.77m2.46-2.46L20 4"/>',
   Mail: '<rect width="20" height="16" x="2" y="4" rx="2"/><path d="m22 7-8.97 5.7a1.94 1.94 0 0 1-2.06 0L2 7"/>',
   Link: '<path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/>',
+  CheckCircle2: '<circle cx="12" cy="12" r="10"/><path d="m9 12 2 2 4-4"/>',
+  AlertCircle:
+    '<circle cx="12" cy="12" r="10"/><path d="M12 8v4"/><circle cx="12" cy="16" r="1" fill="__detail__" stroke="none"/>',
+  AlertTriangle:
+    '<path d="m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3Z"/><path d="M12 9v4"/><circle cx="12" cy="17" r="1" fill="__detail__" stroke="none"/>',
+  Info: '<circle cx="12" cy="12" r="10"/><path d="M12 16v-4M12 8h.01"/>',
+  Close: '<path d="M18 6 6 18M6 6l12 12"/>',
 } as const
 
 type IconName = keyof typeof PATHS
@@ -150,3 +157,8 @@ export const Instagram = makeIcon('Instagram')
 export const XIcon = makeIcon('XIcon')
 export const Mail = makeIcon('Mail')
 export const LinkIcon = makeIcon('Link')
+export const CheckCircle2 = makeIcon('CheckCircle2')
+export const AlertCircle = makeIcon('AlertCircle')
+export const AlertTriangle = makeIcon('AlertTriangle')
+export const Info = makeIcon('Info')
+export const Close = makeIcon('Close')

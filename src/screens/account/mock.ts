@@ -16,7 +16,7 @@ export const CURRENT_USER: UserAccount = {
   email: 'aliffazfararis@gmail.com',
   phone: '+60 12-345 6789',
   status: 'Available',
-  bio: 'Mobile Engineer • Building 60fps chats',
+  bio: 'React Native Engineer',
   avatar:
     'https://aliffazfar.com/_next/image?url=%2Fimages%2Fvsco%2Fimg7.webp&w=1080&q=90',
   blurhash: 'LKEWK^$z-nxucue-MyoL7ibvNKbH',

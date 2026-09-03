@@ -5,6 +5,8 @@ import {
   Screen,
   Avatar,
   ActionSheet,
+  imagePreview,
+  toast,
   SCREEN_HORIZONTAL_PADDING,
 } from '@/components'
 import { useNavigation, useRoute } from '@react-navigation/native'
@@ -67,17 +69,29 @@ export function ContactInfoScreen() {
       id: 'notification',
       title: 'Notification',
       icon: Bell,
+      onPress: () =>
+        toast.info('Notification settings', {
+          description: `Manage alerts for ${name}`,
+        }),
     },
     {
       id: 'media_visibility',
       title: 'Media Visibility',
       icon: ImageIcon,
+      onPress: () =>
+        toast.info('Media visibility', {
+          description: 'Save incoming media to camera roll',
+        }),
     },
     {
       id: 'starred',
       title: 'Starred Messages',
       icon: Star,
       rightBadge: 19,
+      onPress: () =>
+        toast.info('Starred messages', {
+          description: '19 messages saved',
+        }),
     },
     {
       id: 'lock',
@@ -106,6 +120,7 @@ export function ContactInfoScreen() {
       onPress: () => {
         if (isBlocked) {
           unblockUser(chatIdNum)
+          toast.success(`${name} unblocked`)
         } else {
           setActionType('block')
         }
@@ -157,7 +172,10 @@ export function ContactInfoScreen() {
           {item.isSwitch && (
             <Switch
               value={isLocked}
-              onValueChange={setIsLocked}
+              onValueChange={(val) => {
+                setIsLocked(val)
+                toast.info(val ? 'Chat locked' : 'Chat unlocked')
+              }}
               trackColor={{
                 false: colors.surfaceVariant,
                 true: colors.primary,
@@ -201,7 +219,19 @@ export function ContactInfoScreen() {
           <View className="mb-2">
             {/* Profile Avatar, Name, Phone */}
             <View className="items-center mt-3 mb-5">
-              <Avatar uri={avatar} name={name} size={84} isOnline />
+              <Pressable
+                onPress={() => {
+                  if (avatar) {
+                    imagePreview.open({
+                      uri: avatar,
+                      title: name,
+                    })
+                  }
+                }}
+                className="active:opacity-80"
+              >
+                <Avatar uri={avatar} name={name} size={84} isOnline />
+              </Pressable>
               <Text className="text-xl font-bold text-neutral-900 dark:text-white mt-3">
                 {name}
               </Text>
@@ -211,21 +241,42 @@ export function ContactInfoScreen() {
 
               {/* Quick Action 3-Cards */}
               <View className="flex-row gap-3 mt-5 w-full">
-                <Pressable className="flex-1 py-3 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl items-center justify-center active:bg-neutral-50 dark:active:bg-neutral-800/40">
+                <Pressable
+                  onPress={() =>
+                    toast.info('Voice call', {
+                      description: `Calling ${phone}...`,
+                    })
+                  }
+                  className="flex-1 py-3 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl items-center justify-center active:bg-neutral-50 dark:active:bg-neutral-800/40"
+                >
                   <Phone size={20} color={colors.text} strokeWidth={1.75} />
                   <Text className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 mt-1.5">
                     Voice Call
                   </Text>
                 </Pressable>
 
-                <Pressable className="flex-1 py-3 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl items-center justify-center active:bg-neutral-50 dark:active:bg-neutral-800/40">
+                <Pressable
+                  onPress={() =>
+                    toast.info('Video call', {
+                      description: `Starting video call with ${name}...`,
+                    })
+                  }
+                  className="flex-1 py-3 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl items-center justify-center active:bg-neutral-50 dark:active:bg-neutral-800/40"
+                >
                   <Video size={20} color={colors.text} strokeWidth={1.75} />
                   <Text className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 mt-1.5">
                     Video Call
                   </Text>
                 </Pressable>
 
-                <Pressable className="flex-1 py-3 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl items-center justify-center active:bg-neutral-50 dark:active:bg-neutral-800/40">
+                <Pressable
+                  onPress={() =>
+                    toast.info('Search chat', {
+                      description: `Searching messages with ${name}`,
+                    })
+                  }
+                  className="flex-1 py-3 border border-neutral-200/80 dark:border-neutral-800 rounded-2xl items-center justify-center active:bg-neutral-50 dark:active:bg-neutral-800/40"
+                >
                   <Search size={20} color={colors.text} strokeWidth={1.75} />
                   <Text className="text-xs font-semibold text-neutral-800 dark:text-neutral-200 mt-1.5">
                     Search
@@ -240,7 +291,16 @@ export function ContactInfoScreen() {
                 <Text className="text-sm font-semibold text-neutral-500 dark:text-neutral-400">
                   Media, Links, Docs
                 </Text>
-                <Pressable className="flex-row items-center gap-1 active:opacity-60">
+                <Pressable
+                  onPress={() =>
+                    imagePreview.open({
+                      images: MEDIA_ITEMS,
+                      initialIndex: 0,
+                      title: `${name}'s Media`,
+                    })
+                  }
+                  className="flex-row items-center gap-1 active:opacity-60"
+                >
                   <Text className="text-sm font-semibold text-neutral-800 dark:text-neutral-200">
                     275
                   </Text>
@@ -262,21 +322,38 @@ export function ContactInfoScreen() {
                 contentContainerStyle={{
                   paddingRight: SCREEN_HORIZONTAL_PADDING,
                 }}
-                renderItem={({ item }: { item: MediaItem }) => (
-                  <TurboImage
-                    source={{ uri: item.uri }}
-                    placeholder={{ blurhash: item.blurhash }}
-                    style={{
-                      width: 84,
-                      height: 84,
-                      marginRight: 10,
-                      borderRadius: 16,
-                      backgroundColor: colors.surface,
-                    }}
-                    resize={300}
-                    resizeMode="cover"
-                    fadeDuration={250}
-                  />
+                renderItem={({
+                  item,
+                  index,
+                }: {
+                  item: MediaItem
+                  index: number
+                }) => (
+                  <Pressable
+                    onPress={() =>
+                      imagePreview.open({
+                        images: MEDIA_ITEMS,
+                        initialIndex: index,
+                        title: `${name}'s Media`,
+                      })
+                    }
+                    className="active:opacity-90"
+                  >
+                    <TurboImage
+                      source={{ uri: item.uri }}
+                      placeholder={{ blurhash: item.blurhash }}
+                      style={{
+                        width: 84,
+                        height: 84,
+                        marginRight: 10,
+                        borderRadius: 16,
+                        backgroundColor: colors.surface,
+                      }}
+                      resize={300}
+                      resizeMode="cover"
+                      fadeDuration={250}
+                    />
+                  </Pressable>
                 )}
               />
             </View>
@@ -299,6 +376,11 @@ export function ContactInfoScreen() {
             onPress={() => {
               if (actionType === 'block') {
                 blockUser(chatIdNum)
+                toast.error(`${name} blocked`)
+              } else if (actionType === 'report') {
+                toast.success('Report submitted', {
+                  description: 'Thank you for helping keep the community safe.',
+                })
               }
               setActionType(null)
             }}

@@ -34,33 +34,29 @@ export function AccountScreen() {
   const { colors } = useAppTheme()
   const [sheetConfig, setSheetConfig] = useState<ProfileSheetProps | null>(null)
 
+  const openProfileSheet = () =>
+    setSheetConfig({
+      type: 'details',
+      title: 'My Profile',
+      subtitle: CURRENT_USER.bio,
+      showProfileHeader: true,
+      items: [
+        { label: 'Display Name', value: CURRENT_USER.name },
+        { label: 'Username', value: CURRENT_USER.username },
+        { label: 'Status', value: CURRENT_USER.status },
+        { label: 'Phone', value: CURRENT_USER.phone },
+        { label: 'Email', value: CURRENT_USER.email },
+      ],
+      actionLabel: 'Edit Profile',
+    })
+
   const menuItems: AccountMenuItem[] = [
     {
       id: 'general',
       title: 'General',
       subtitle: 'Manage your profile',
       icon: SlidersHorizontal,
-      onPress: () =>
-        setSheetConfig({
-          type: 'details',
-          title: 'General Profile',
-          subtitle: 'Personal information & account details',
-          items: [
-            {
-              label: 'Display Name',
-              value: CURRENT_USER.name,
-              hint: 'Visible to all contacts',
-            },
-            {
-              label: 'Status',
-              value: CURRENT_USER.status,
-              hint: 'Updated today',
-            },
-            { label: 'Phone', value: CURRENT_USER.phone },
-            { label: 'Email', value: CURRENT_USER.email },
-          ],
-          actionLabel: 'Edit Profile',
-        }),
+      onPress: openProfileSheet,
     },
     {
       id: 'appearance',
@@ -221,20 +217,7 @@ export function AccountScreen() {
 
             {/* Profile Row */}
             <Pressable
-              onPress={() =>
-                setSheetConfig({
-                  type: 'details',
-                  title: CURRENT_USER.name,
-                  subtitle: CURRENT_USER.bio,
-                  items: [
-                    { label: 'Username', value: CURRENT_USER.username },
-                    { label: 'Status', value: CURRENT_USER.status },
-                    { label: 'Phone', value: CURRENT_USER.phone },
-                    { label: 'Email', value: CURRENT_USER.email },
-                  ],
-                  actionLabel: 'Edit Profile',
-                })
-              }
+              onPress={openProfileSheet}
               className="flex-row items-center justify-between pb-4 active:opacity-75"
             >
               <View className="flex-row items-center flex-1">
@@ -261,15 +244,9 @@ export function AccountScreen() {
                   hitSlop={8}
                   onPress={() =>
                     setSheetConfig({
-                      type: 'details',
+                      type: 'qr',
                       title: 'My QR Code',
-                      subtitle: `Scan this code to instantly connect with ${CURRENT_USER.name}`,
-                      items: [
-                        { label: 'Code Format', value: 'PerfChat Secure QR' },
-                        { label: 'Account ID', value: CURRENT_USER.accountId },
-                        { label: 'Expires', value: 'Never' },
-                      ],
-                      actionLabel: 'Share QR Code',
+                      subtitle: `Scan this code to connect with ${CURRENT_USER.name}`,
                     })
                   }
                   className="p-1 active:opacity-60"

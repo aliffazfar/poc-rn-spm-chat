@@ -13,6 +13,8 @@ import {
   Avatar,
   MessageBubble,
   MessageInput,
+  imagePreview,
+  toast,
   SCREEN_HORIZONTAL_PADDING,
 } from '@/components'
 import { useComments, useSendComment, useUser } from '@/api'
@@ -82,10 +84,26 @@ export function ConversationScreen() {
           </View>
 
           <View className="flex-row items-center gap-4 -mr-1">
-            <Pressable hitSlop={10} className="active:opacity-60">
+            <Pressable
+              onPress={() =>
+                toast.info('Search messages', {
+                  description: `Searching chat with ${name}`,
+                })
+              }
+              hitSlop={10}
+              className="active:opacity-60"
+            >
               <Search size={22} color={colors.text} strokeWidth={1.75} />
             </Pressable>
-            <Pressable hitSlop={10} className="active:opacity-60">
+            <Pressable
+              onPress={() =>
+                toast.info('More options', {
+                  description: 'Media, links, docs, wallpaper and more',
+                })
+              }
+              hitSlop={10}
+              className="active:opacity-60"
+            >
               <EllipsisVertical
                 size={22}
                 color={colors.text}
@@ -110,8 +128,24 @@ export function ConversationScreen() {
                 text={item.body}
                 imageUrl={item.imageUrl}
                 blurhash={item.blurhash}
+                audioDuration={item.audioDuration}
                 isMe={item.isMe ?? index % 2 === 1}
                 isSystem={item.isSystem}
+                onPressImage={() => {
+                  if (item.imageUrl) {
+                    imagePreview.open({
+                      uri: item.imageUrl,
+                      blurhash: item.blurhash,
+                      aspectRatio: 1.5,
+                      title: name,
+                    })
+                  }
+                }}
+                onPressAudio={() =>
+                  toast.info('Voice message', {
+                    description: `Playing audio note (${item.audioDuration ?? '0:15'})`,
+                  })
+                }
                 time={
                   item.createdAt
                     ? new Date(item.createdAt).toLocaleTimeString([], {
@@ -148,7 +182,10 @@ export function ConversationScreen() {
         {/* Bottom Input Bar */}
         {isBlocked ? (
           <Pressable
-            onPress={() => unblockUser(chatIdNum)}
+            onPress={() => {
+              unblockUser(chatIdNum)
+              toast.success(`${name} unblocked`)
+            }}
             className="py-4 px-5 items-center justify-center bg-neutral-100 dark:bg-[#1A1A1A] border-t border-neutral-200 dark:border-neutral-800 active:opacity-75"
           >
             <Text className="text-xs text-neutral-500 dark:text-neutral-400 font-medium text-center">
@@ -163,6 +200,16 @@ export function ConversationScreen() {
             value={inputText}
             onChangeText={setInputText}
             onSend={handleSend}
+            onPressPlus={() =>
+              toast.info('Attachments', {
+                description: 'Share photos, documents, location or contacts',
+              })
+            }
+            onPressSmile={() =>
+              toast.info('Stickers & Emojis', {
+                description: 'Choose emoji reactions or sticker packs',
+              })
+            }
             isSending={isSending}
           />
         )}

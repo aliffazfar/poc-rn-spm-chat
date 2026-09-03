@@ -1,40 +1,49 @@
 export interface MediaItem {
   uri: string
   blurhash: string
+  aspectRatio?: number
 }
 
 export const MEDIA_ITEMS: MediaItem[] = [
   {
     uri: 'https://images.unsplash.com/photo-1518998053901-5348d3961a04?w=300&auto=format&fit=crop&q=80',
     blurhash: 'LCJa[$=}D$xZ?cWUkCay4Tt8%Moz',
+    aspectRatio: 1.5,
   },
   {
     uri: 'https://images.unsplash.com/photo-1448375240586-882707db888b?w=300&auto=format&fit=crop&q=80',
     blurhash: 'L99%*W8{DP_3.9IBax%M4U%M%zD%',
+    aspectRatio: 1.5,
   },
   {
     uri: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=300&auto=format&fit=crop&q=80',
     blurhash: 'LcM7fP}?slR*Ten*RjfiogR,o0s:',
+    aspectRatio: 1.5,
   },
   {
     uri: 'https://images.unsplash.com/photo-1513694203232-719a280e022f?w=300&auto=format&fit=crop&q=80',
     blurhash: 'LXLXf2M_tQ-;~qk9M{M_Ioj[j?kD',
+    aspectRatio: 1.5,
   },
   {
     uri: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=300&auto=format&fit=crop&q=80',
     blurhash: 'LuF$w~RiIoxu_4tRIUt7t7xuRjRP',
+    aspectRatio: 1.5,
   },
   {
     uri: 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=300&auto=format&fit=crop&q=80',
     blurhash: 'LMKUi^M{t6IV~q-;t7Rj_3of9FRj',
+    aspectRatio: 1.5,
   },
   {
     uri: 'https://images.unsplash.com/photo-1501785888041-af3ef285b470?w=300&auto=format&fit=crop&q=80',
     blurhash: 'LQE4P#n2MING^Us*VqV@%$M{jEs+',
+    aspectRatio: 1.5,
   },
   {
     uri: 'https://images.unsplash.com/photo-1534447677768-be436bb09401?w=300&auto=format&fit=crop&q=80',
     blurhash: 'L56khr-=4:M|9GRQxZn$0OIV-UxV',
+    aspectRatio: 1.5,
   },
 ]
 
@@ -42,12 +51,14 @@ interface TemplateMessage {
   isMe: boolean
   body?: string
   hasImage?: boolean
+  audioDuration?: string
 }
 
 const CONVERSATION_TEMPLATES: TemplateMessage[][] = [
   [
     { isMe: true, body: 'Not yet, I was in a rush finishing the design.' },
     { isMe: true, hasImage: true },
+    { isMe: false, audioDuration: '0:18' },
     { isMe: false, body: 'Wow, that design looks amazing!' },
     { isMe: true, body: 'Thanks a lot! Really appreciate the feedback.' },
   ],
@@ -61,6 +72,7 @@ const CONVERSATION_TEMPLATES: TemplateMessage[][] = [
       body: 'That makes a lot of sense! Check out this architecture overview:',
     },
     { isMe: false, hasImage: true },
+    { isMe: true, audioDuration: '0:26' },
     { isMe: true, body: 'Clean setup, looks great!' },
   ],
   [
@@ -70,6 +82,7 @@ const CONVERSATION_TEMPLATES: TemplateMessage[][] = [
       body: 'Zod mostly, the TypeScript inference is unbeatable.',
     },
     { isMe: true, hasImage: true },
+    { isMe: false, audioDuration: '0:14' },
     { isMe: false, body: 'Agreed, works like a charm.' },
   ],
   [
@@ -79,6 +92,7 @@ const CONVERSATION_TEMPLATES: TemplateMessage[][] = [
       body: 'Awesome, send over the latency charts whenever ready!',
     },
     { isMe: true, hasImage: true },
+    { isMe: false, audioDuration: '0:32' },
     { isMe: false, body: 'Impressive throughput numbers!' },
   ],
 ]
@@ -119,6 +133,7 @@ export function buildEnhancedConversation(
       body: step.body ?? '',
       imageUrl: media?.uri,
       blurhash: media?.blurhash,
+      audioDuration: step.audioDuration,
       isMe: step.isMe,
       createdAt: messageTime,
     }
@@ -137,7 +152,13 @@ export function getInitialLastMessage(postId: number): {
   const lastStep = template[template.length - 1]
   const minute = String(10 + (postId % 45)).padStart(2, '0')
   return {
-    message: lastStep.body || (lastStep.hasImage ? '📷 Photo' : 'Hey!'),
+    message:
+      lastStep.body ||
+      (lastStep.hasImage
+        ? '📷 Photo'
+        : lastStep.audioDuration
+          ? '🎤 Voice message'
+          : 'Hey!'),
     time: `08:${minute}`,
   }
 }
