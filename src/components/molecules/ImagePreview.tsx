@@ -142,7 +142,7 @@ export function ImagePreview(props?: Partial<ImagePreviewProps>) {
     isClosing.value = false
   }
 
-  // ponytail: Simple scale-down + drop dissolve creates the illusion of shrinking back into the card with zero coordinate overhead
+  // Simple scale-down + drop dissolve creates the illusion of shrinking back into the card with zero coordinate overhead
   const dismiss = () => {
     if (isClosing.value) return
     isClosing.value = true

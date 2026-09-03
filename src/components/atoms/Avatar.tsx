@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import { View, Text, ViewStyle, StyleProp } from 'react-native'
 import TurboImage from 'react-native-turbo-image'
+import { useAppTheme } from '@/hooks/useAppTheme'
+import { Skeleton } from './Skeleton'
 
 export type AvatarSize = 'sm' | 'md' | 'lg' | 'xl'
 
@@ -30,8 +32,14 @@ export function Avatar({
   style,
   blurhash,
 }: AvatarProps) {
+  const { colors } = useAppTheme()
+  const [isLoading, setIsLoading] = useState(Boolean(uri))
   const dimension = typeof size === 'number' ? size : SIZE_MAP[size]
   const radius = dimension / 2
+
+  useEffect(() => {
+    setIsLoading(Boolean(uri))
+  }, [uri])
 
   const initials = name
     ? name
@@ -55,12 +63,15 @@ export function Avatar({
             width: dimension,
             height: dimension,
             borderRadius: radius,
-            backgroundColor: '#E5E5E5',
+            backgroundColor: colors.surfaceVariant,
           }}
           resize={dimension * 2}
           resizeMode="cover"
           rounded
           fadeDuration={blurhash ? 250 : 0}
+          onStart={() => setIsLoading(true)}
+          onSuccess={() => setIsLoading(false)}
+          onFailure={() => setIsLoading(false)}
         />
       ) : (
         <View
@@ -79,6 +90,18 @@ export function Avatar({
           </Text>
         </View>
       )}
+
+      {uri && isLoading && !blurhash ? (
+        <Skeleton
+          className="absolute"
+          style={{
+            width: dimension,
+            height: dimension,
+            borderRadius: radius,
+            backgroundColor: colors.surfaceVariant,
+          }}
+        />
+      ) : null}
 
       {isOnline !== undefined && (
         <View

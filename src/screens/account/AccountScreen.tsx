@@ -1,9 +1,13 @@
 import React, { useState } from 'react'
 import { View, Text, Pressable } from 'react-native'
 import { LegendList } from '@legendapp/list/react-native'
-import { Screen, Avatar, SCREEN_HORIZONTAL_PADDING } from '@/components'
 import {
-  Search,
+  Avatar,
+  SCREEN_HORIZONTAL_PADDING,
+  Screen,
+  TabHeader,
+} from '@/components'
+import {
   QrCode,
   PlusCircle,
   SlidersHorizontal,
@@ -190,6 +194,8 @@ export function AccountScreen() {
 
   return (
     <Screen edges={['top']} className="flex-1">
+      <TabHeader title="Account" actions={[{ icon: 'search' }]} />
+
       <LegendList
         data={menuItems}
         keyExtractor={(item: AccountMenuItem) => item.id}
@@ -205,16 +211,6 @@ export function AccountScreen() {
         className="flex-1"
         ListHeaderComponent={
           <View className="mb-2">
-            {/* Header */}
-            <View className="flex-row items-center justify-between pt-2 pb-5">
-              <Text className="text-3xl font-bold tracking-tight text-neutral-900 dark:text-white">
-                Account
-              </Text>
-              <Pressable hitSlop={10} className="p-1 active:opacity-60">
-                <Search size={22} color={colors.text} strokeWidth={2} />
-              </Pressable>
-            </View>
-
             {/* Profile Row */}
             <Pressable
               onPress={openProfileSheet}
@@ -225,6 +221,7 @@ export function AccountScreen() {
                   uri={CURRENT_USER.avatar}
                   name={CURRENT_USER.name}
                   size={56}
+                  blurhash={CURRENT_USER.blurhash}
                 />
                 <View className="ml-3.5 flex-1">
                   <Text

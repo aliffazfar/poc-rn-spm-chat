@@ -14,9 +14,15 @@ const PATHS = {
   MessageSquare:
     '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/><circle cx="8" cy="12" r="1" fill="__detail__" stroke="none"/><circle cx="12" cy="12" r="1" fill="__detail__" stroke="none"/><circle cx="16" cy="12" r="1" fill="__detail__" stroke="none"/>',
   Radio:
-    '<rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8 13 2-2 2 2 3-3 2 2"/>',
+    '<rect x="4" y="4" width="16" height="16" rx="4"/><path d="m8 13 2-2 2 2 3-3 2 2" fill="none" stroke="__detail__"/>',
   Phone:
     '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"/>',
+  PhoneIncoming:
+    '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"/><path d="M5 3H2m0 0v3m0-3 5 5"/>',
+  PhoneOutgoing:
+    '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"/><path d="M19 2h3m0 0v3m0-3-5 5"/>',
+  PhoneMissed:
+    '<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92z"/><path d="m15 3 5 5m0-5v5h-5"/>',
   User: '<path d="M20 21a8 8 0 0 0-16 0"/><circle cx="12" cy="7" r="4"/>',
   Camera:
     '<path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/><circle cx="12" cy="13" r="4"/>',
@@ -92,6 +98,11 @@ function Icon({
     fill,
     name === 'Play' || name === 'EllipsisVertical' ? stroke : 'none',
   )
+  const detail = fill
+    ? stroke.toLowerCase() === '#ffffff'
+      ? '#171717'
+      : '#fff'
+    : stroke
   const uri = useMemo(() => {
     const svg =
       '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="' +
@@ -101,10 +112,10 @@ function Icon({
       '" stroke-width="' +
       strokeWidth +
       '" stroke-linecap="round" stroke-linejoin="round">' +
-      PATHS[name].replaceAll('__detail__', fill ? '#fff' : stroke) +
+      PATHS[name].replaceAll('__detail__', detail) +
       '</svg>'
     return 'data:image/svg+xml;utf8,' + encodeURIComponent(svg)
-  }, [fill, name, paint, stroke, strokeWidth])
+  }, [detail, name, paint, stroke, strokeWidth])
 
   return (
     <TurboImage
@@ -124,6 +135,9 @@ const makeIcon = (name: IconName) =>
 export const MessageSquare = makeIcon('MessageSquare')
 export const Radio = makeIcon('Radio')
 export const Phone = makeIcon('Phone')
+export const PhoneIncoming = makeIcon('PhoneIncoming')
+export const PhoneOutgoing = makeIcon('PhoneOutgoing')
+export const PhoneMissed = makeIcon('PhoneMissed')
 export const User = makeIcon('User')
 export const Camera = makeIcon('Camera')
 export const EllipsisVertical = makeIcon('EllipsisVertical')

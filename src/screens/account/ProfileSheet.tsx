@@ -114,7 +114,7 @@ export function ProfileSheet(props: ProfileSheetProps) {
     // rendered directly as a sheet component
   }
 
-  const { mode, colors, setMode } = useAppTheme()
+  const { mode, isDark, colors, setMode } = useAppTheme()
   const isVisible = props.visible ?? true
   const onClose = props.onClose ?? (() => {})
 
@@ -210,6 +210,7 @@ export function ProfileSheet(props: ProfileSheetProps) {
                     uri={CURRENT_USER.avatar}
                     name={CURRENT_USER.name}
                     size={42}
+                    blurhash={CURRENT_USER.blurhash}
                   />
                 </View>
               </View>
@@ -236,6 +237,11 @@ export function ProfileSheet(props: ProfileSheetProps) {
             <View className="flex-row gap-3 mb-4">
               {THEME_OPTIONS.map((opt) => {
                 const isSelected = mode === opt.mode
+                const iconColor = isSelected
+                  ? isDark
+                    ? '#171717'
+                    : '#FFFFFF'
+                  : colors.text
                 const IconComp =
                   opt.mode === 'system'
                     ? SlidersHorizontal
@@ -263,17 +269,7 @@ export function ProfileSheet(props: ProfileSheetProps) {
                           : 'bg-neutral-200/60 dark:bg-neutral-800'
                       }`}
                     >
-                      <IconComp
-                        size={18}
-                        color={
-                          isSelected
-                            ? mode === 'dark'
-                              ? '#171717'
-                              : '#FFFFFF'
-                            : colors.text
-                        }
-                        strokeWidth={2}
-                      />
+                      <IconComp size={18} color={iconColor} strokeWidth={2} />
                     </View>
                     <Text
                       className={`text-[13px] font-semibold text-center ${
@@ -313,6 +309,7 @@ export function ProfileSheet(props: ProfileSheetProps) {
                     name={CURRENT_USER.name}
                     size={72}
                     isOnline
+                    blurhash={CURRENT_USER.blurhash}
                   />
                   <Pressable
                     onPress={() =>
@@ -324,7 +321,7 @@ export function ProfileSheet(props: ProfileSheetProps) {
                   >
                     <Camera
                       size={12}
-                      color={mode === 'dark' ? '#171717' : '#FFFFFF'}
+                      color={isDark ? '#171717' : '#FFFFFF'}
                       strokeWidth={2.2}
                     />
                   </Pressable>

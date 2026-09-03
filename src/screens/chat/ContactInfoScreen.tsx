@@ -317,6 +317,7 @@ export function ContactInfoScreen() {
                 data={MEDIA_ITEMS}
                 keyExtractor={(_item, idx) => String(idx)}
                 estimatedItemSize={94}
+                getFixedItemSize={() => 94}
                 recycleItems
                 showsHorizontalScrollIndicator={false}
                 contentContainerStyle={{
