@@ -1,97 +1,62 @@
-This is a new [**React Native**](https://reactnative.dev) project, bootstrapped using [`@react-native-community/cli`](https://github.com/react-native-community/cli).
+# React Native SPM Chat POC
 
-# Getting Started
+![Chat preview](assets/preview.webp)
 
-> **Note**: Make sure you have completed the [Set Up Your Environment](https://reactnative.dev/docs/set-up-your-environment) guide before proceeding.
+[![Download Android APK](https://img.shields.io/badge/Download_APK-24.45_MB-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://i.loadly.io/77qqPgxf)
+[![React Native](https://img.shields.io/badge/React_Native-0.87.1-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactnative.dev)
+[![SwiftPM](https://img.shields.io/badge/iOS-Swift_Package_Manager-FA7343?style=for-the-badge&logo=swift&logoColor=white)](https://developer.apple.com/swift/)
 
-## Step 1: Start Metro
+A React Native chat application testing pure Swift Package Manager (SPM) on iOS with zero CocoaPods dependencies, built ahead of the [December 2, 2026 CocoaPods sunset](https://blog.cocoapods.org/CocoaPods-Specs-Repo/).
 
-First, you will need to run **Metro**, the JavaScript build tool for React Native.
+Powered by the experimental SPM support introduced in [React Native 0.87](https://reactnative.dev/blog/2026/08/11/react-native-0.87).
 
-To start the Metro dev server, run the following command from the root of your React Native project:
+## Why are there patches?
 
-```sh
-# Using npm
-npm start
+Most React Native libraries only ship with `.podspec` files. While `react-native spm scaffold` generates basic templates, complex C++, JSI, and Fabric libraries require manual patching to fix non-canonical header imports, set C++20 flags, define New Architecture macros, and resolve external Swift packages (like Nuke or MMKVCore).
 
-# OR using Yarn
-yarn start
-```
+Eight dependencies are patched via `.yarn/patches`:
 
-## Step 2: Build and run your app
+- `react-native-nitro-modules`: Adds SPM targets and C++ module maps for New Architecture autolinking.
+- `react-native-mmkv`: Links `MMKVCore` and `ReactNativeNitroModules` directly through SPM.
+- `react-native-turbo-image`: Links Nuke and NukeUI through SPM.
+- `react-native-reanimated` and `react-native-worklets`: SPM targets and runtime headers for Reanimated v4.
+- `react-native-screens`: SPM targets and header search paths.
+- `react-native-safe-area-context`: SPM manifest and C++ bridging headers.
+- `@react-native/gradle-plugin`: Android build compatibility fix.
 
-With Metro running, open a new terminal window/pane from the root of your React Native project, and use one of the following commands to build and run your Android or iOS app:
+These patches will be removed as upstream maintainers release official SPM support.
 
-### Android
+I documented notes and workflows from my own trial and error while experimenting with this setup (migrating from CocoaPods, scaffolding `Package.swift` manifests via `npx react-native spm scaffold`, and resolving C++ headers) in [.skills/react-native-spm/SKILL.md](.skills/react-native-spm/SKILL.md) in case it helps anyone testing the same path.
 
-```sh
-# Using npm
-npm run android
+## Performance stack
 
-# OR using Yarn
-yarn android
-```
+- Devtools: [Rozenite](https://github.com/callstackincubator/rozenite) (a tool I contribute to) for live inspection of MMKV storage, TanStack Query caches, React Navigation state, and many more plugins.
+- Styling: [uniwind](https://github.com/uni-stack/uniwind), the fastest Tailwind CSS v4 engine for React Native, with instant dark mode support.
+- Storage: [react-native-mmkv](https://github.com/mrousavy/react-native-mmkv) with [nitro modules](https://github.com/mrousavy/nitro) for direct C++ JSI persistence.
+- Lists: [@legendapp/list](https://github.com/LegendApp/legend-list) for container-recycling 120fps virtualized lists.
+- Images: [react-native-turbo-image](https://github.com/duguyihou/react-native-turbo-image) backed by Nuke.
+- Cache: [TanStack React Query](https://github.com/TanStack/query) with MMKV persistence.
+- Client state: [zustand](https://github.com/pmndrs/zustand) for lightweight store management.
+- Animations: [react-native-reanimated v4](https://github.com/software-mansion/react-native-reanimated).
+- Navigation: [@react-navigation/native-stack](https://github.com/react-navigation/react-navigation) for native view controller transitions.
 
-### iOS
+## Quick start
 
-For iOS, remember to install CocoaPods dependencies (this only needs to be run on first clone or after updating native deps).
+Tested environment:
 
-The first time you create a new project, run the Ruby bundler to install CocoaPods itself:
-
-```sh
-bundle install
-```
-
-Then, and every time you update your native dependencies, run:
-
-```sh
-bundle exec pod install
-```
-
-For more information, please visit [CocoaPods Getting Started guide](https://guides.cocoapods.org/using/getting-started.html).
+- Yarn: `4.12.0`
+- Xcode: `16.2` (Swift Tools 6.0)
+- Node: `>= 22.11.0` (tested on `24.5.0`)
 
 ```sh
-# Using npm
-npm run ios
-
-# OR using Yarn
-yarn ios
+yarn install
+yarn spm:sync # sync SPM dependencies (no pod install)
+yarn ios      # or yarn android
 ```
 
-If everything is set up correctly, you should see your new app running in the Android Emulator, iOS Simulator, or your connected device.
+Helpful commands:
 
-This is one way to run your app — you can also build it directly from Android Studio or Xcode.
-
-## Step 3: Modify your app
-
-Now that you have successfully run the app, let's make changes!
-
-Open `App.tsx` in your text editor of choice and make some changes. When you save, your app will automatically update and reflect these changes — this is powered by [Fast Refresh](https://reactnative.dev/docs/fast-refresh).
-
-When you want to forcefully reload, for example to reset the state of your app, you can perform a full reload:
-
-- **Android**: Press the <kbd>R</kbd> key twice or select **"Reload"** from the **Dev Menu**, accessed via <kbd>Ctrl</kbd> + <kbd>M</kbd> (Windows/Linux) or <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> (macOS).
-- **iOS**: Press <kbd>R</kbd> in iOS Simulator.
-
-## Congratulations! :tada:
-
-You've successfully run and modified your React Native App. :partying_face:
-
-### Now what?
-
-- If you want to add this new React Native code to an existing application, check out the [Integration guide](https://reactnative.dev/docs/integration-with-existing-apps).
-- If you're curious to learn more about React Native, check out the [docs](https://reactnative.dev/docs/getting-started).
-
-# Troubleshooting
-
-If you're having issues getting the above steps to work, see the [Troubleshooting](https://reactnative.dev/docs/troubleshooting) page.
-
-# Learn More
-
-To learn more about React Native, take a look at the following resources:
-
-- [React Native Website](https://reactnative.dev) - learn more about React Native.
-- [Getting Started](https://reactnative.dev/docs/environment-setup) - an **overview** of React Native and how setup your environment.
-- [Learn the Basics](https://reactnative.dev/docs/getting-started) - a **guided tour** of the React Native **basics**.
-- [Blog](https://reactnative.dev/blog) - read the latest official React Native **Blog** posts.
-- [`@facebook/react-native`](https://github.com/facebook/react-native) - the Open Source; GitHub **repository** for React Native.
+- `yarn start:rozenite`: Run Metro with Rozenite devtools enabled.
+- `yarn clean:spm`: Clear SPM build cache.
+- `yarn build:android` / `yarn build:ios`: Compile release builds.
+- `yarn loadly:android`: Build release APK and upload directly to Loadly.

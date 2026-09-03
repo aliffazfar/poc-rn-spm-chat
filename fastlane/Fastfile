@@ -1,0 +1,91 @@
+default_platform(:android)
+
+platform :android do
+  desc "Increment build number in .env and compile slim release APK"
+  lane :build do |options|
+    env_file = File.expand_path("../.env", __dir__)
+    UI.user_error!(".env not found at #{env_file}") unless File.exist?(env_file)
+
+    env_content = File.read(env_file)
+
+    version_name = env_content[/^APP_VERSION_NAME=(.*)$/, 1] || "1.0.0"
+    current_code = (env_content[/^APP_VERSION_CODE=(.*)$/, 1] || "0").to_i
+    new_code = current_code + 1
+
+    if env_content =~ /^APP_VERSION_CODE=/
+      env_content.sub!(/^APP_VERSION_CODE=.*$/, "APP_VERSION_CODE=#{new_code}")
+    else
+      env_content += "\nAPP_VERSION_CODE=#{new_code}"
+    end
+
+    unless env_content =~ /^APP_VERSION_NAME=/
+      env_content += "\nAPP_VERSION_NAME=#{version_name}"
+    end
+
+    File.write(env_file, env_content)
+    UI.success("Updated .env: APP_VERSION_CODE=#{new_code} (v#{version_name})")
+
+    # Target architecture: default to arm64-v8a for slim APK and fast build
+    arch = options[:arch] || "arm64-v8a"
+    gradle_props = {
+      "versionCode" => new_code,
+      "versionName" => version_name
+    }
+    gradle_props["reactNativeArchitectures"] = arch unless arch == "all"
+
+    UI.message("Building Release APK for arch: #{arch} (R8 + Resource Shrinking enabled)")
+
+    gradle(
+      task: "assemble",
+      build_type: "Release",
+      project_dir: "android/",
+      properties: gradle_props
+    )
+
+    apk_path = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH] || "android/app/build/outputs/apk/release/app-release.apk"
+    if File.exist?(apk_path)
+      size_mb = (File.size(apk_path).to_f / 1024 / 1024).round(2)
+      UI.success("Slim Release APK ready: #{apk_path} (#{size_mb} MB)")
+    else
+      UI.success("Release APK ready: #{apk_path}")
+    end
+    apk_path
+  end
+
+  desc "Build release APK and distribute to Loadly"
+  lane :loadly do |options|
+    apk_path = build(options)
+    loadly_key = ENV["LOADLY_API_KEY"] || options[:api_key]
+    if loadly_key.to_s.empty?
+      env_file = File.expand_path("../.env", __dir__)
+      loadly_key = File.read(env_file)[/^LOADLY_API_KEY=(.*)$/, 1]&.strip if File.exist?(env_file)
+    end
+    UI.user_error!("LOADLY_API_KEY is not set in .env or environment") if loadly_key.to_s.empty?
+
+    UI.message("Uploading #{apk_path} to Loadly...")
+    upload_to_loadly(
+      api_key: loadly_key,
+      file: apk_path
+    )
+    UI.success("Uploaded to Loadly successfully!")
+  end
+
+  desc "Alias for release to Loadly"
+  lane :release do |options|
+    loadly(options)
+  end
+end
+
+platform :ios do
+  desc "Mock / placeholder iOS build lane"
+  lane :build do
+    UI.message("iOS build lane (placeholder)")
+  end
+
+  desc "Mock / placeholder iOS release lane"
+  lane :release do
+    build
+    UI.message("iOS release lane (placeholder)")
+    UI.success("iOS release completed (mock)!")
+  end
+end

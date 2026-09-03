@@ -12,6 +12,10 @@
     "lint": "eslint .",
     "format": "prettier --write .",
     "format:check": "prettier --check .",
+    "build:android": "fastlane android build",
+    "loadly:android": "fastlane android loadly",
+    "build:ios": "fastlane ios build",
+    "release:ios": "fastlane ios release",
     "start": "react-native start",
     "start:rozenite": "WITH_ROZENITE=true react-native start",
     "test": "jest"
