@@ -22,6 +22,7 @@ import {
   AlertTriangle,
   Info,
 } from '@/components/icons'
+import { SCREEN_HORIZONTAL_PADDING } from '@/components/atoms/Screen'
 import { useAppTheme } from '@/hooks'
 
 export type ToastType =
@@ -355,14 +356,12 @@ export function Toaster({ offset = 8 }: ToasterProps) {
 const styles = StyleSheet.create({
   container: {
     position: 'absolute',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
+    left: SCREEN_HORIZONTAL_PADDING,
+    right: SCREEN_HORIZONTAL_PADDING,
     zIndex: 999999,
   },
   toastWrapper: {
-    width: '92%',
-    maxWidth: 400,
+    width: '100%',
     marginBottom: 6,
   },
 })
