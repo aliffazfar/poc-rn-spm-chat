@@ -42,14 +42,16 @@ platform :android do
       properties: gradle_props
     )
 
-    apk_path = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH] || "android/app/build/outputs/apk/release/app-release.apk"
-    if File.exist?(apk_path)
-      size_mb = (File.size(apk_path).to_f / 1024 / 1024).round(2)
-      UI.success("Slim Release APK ready: #{apk_path} (#{size_mb} MB)")
+    apk_output = lane_context[SharedValues::GRADLE_APK_OUTPUT_PATH] || File.expand_path("../android/app/build/outputs/apk/release/app-release.apk", __dir__)
+    dest_apk = File.expand_path("PerfChat.apk", __dir__)
+    if File.exist?(apk_output)
+      FileUtils.cp(apk_output, dest_apk)
+      size_mb = (File.size(dest_apk).to_f / 1024 / 1024).round(2)
+      UI.success("Release APK ready: #{dest_apk} (#{size_mb} MB)")
+      dest_apk
     else
-      UI.success("Release APK ready: #{apk_path}")
+      UI.user_error!("APK not found at #{apk_output}")
     end
-    apk_path
   end
 
   desc "Build release APK and distribute to Loadly"
@@ -77,15 +79,106 @@ platform :android do
 end
 
 platform :ios do
-  desc "Mock / placeholder iOS build lane"
-  lane :build do
-    UI.message("iOS build lane (placeholder)")
+  desc "Archive Xcode project and package into an IPA (Payload folder method)"
+  lane :build do |options|
+    ios_dir = File.expand_path("../ios", __dir__)
+    build_dir = File.join(ios_dir, "build")
+    FileUtils.mkdir_p(build_dir)
+
+    format_duration = lambda do |secs|
+      m = (secs / 60).to_i
+      s = (secs % 60).round(1)
+      m > 0 ? "#{m}m #{s}s (#{secs}s)" : "#{secs}s"
+    end
+
+    total_start = Time.now
+    archive_path = options[:archive_path]
+    archive_duration = 0
+
+    # Run xcodebuild archive fresh by default, unless an archive path is explicitly passed or skip_archive is set
+    if archive_path.to_s.empty?
+      if options[:skip_archive]
+        today_archives = Dir.glob(File.expand_path("~/Library/Developer/Xcode/Archives/#{Time.now.strftime('%Y-%m-%d')}/*.xcarchive"))
+        archive_path = today_archives.max_by { |f| File.mtime(f) } || File.join(build_dir, "PerfChat.xcarchive")
+        UI.message("Skipping archive, packaging existing: #{archive_path}")
+      else
+        archive_path = File.join(build_dir, "PerfChat.xcarchive")
+        project_path = File.join(ios_dir, "PerfChat.xcodeproj")
+
+        if options[:clean]
+          UI.message("Cleaning build cache for clean benchmark...")
+          sh("xcodebuild clean -project #{project_path.shellescape} -scheme PerfChat -configuration Release")
+        end
+
+        UI.message("Archiving PerfChat fresh with xcodebuild...")
+        archive_start = Time.now
+        sh("xcodebuild archive -project #{project_path.shellescape} -scheme PerfChat -configuration Release -destination 'generic/platform=iOS' -archivePath #{archive_path.shellescape} -showBuildTimingSummary")
+        archive_duration = (Time.now - archive_start).round(1)
+      end
+    end
+
+    UI.user_error!("Archive not found at #{archive_path}") unless File.exist?(archive_path)
+    UI.success("Archive ready: #{archive_path}")
+
+    pack_start = Time.now
+
+    # Locate .app inside archive
+    app_candidates = Dir.glob(File.join(archive_path, "Products/Applications/*.app"))
+    UI.user_error!("No .app found in #{archive_path}/Products/Applications") if app_candidates.empty?
+    app_path = app_candidates.first
+    app_name = File.basename(app_path, ".app")
+
+    # Package into Payload -> IPA
+    payload_dir = File.join(build_dir, "Payload")
+    FileUtils.rm_rf(payload_dir)
+    FileUtils.mkdir_p(payload_dir)
+
+    UI.message("Copying #{app_name}.app to Payload folder...")
+    FileUtils.cp_r(app_path, File.join(payload_dir, "#{app_name}.app"))
+
+    ipa_path = File.expand_path("#{app_name}.ipa", __dir__)
+    FileUtils.rm_f(ipa_path)
+
+    UI.message("Compressing Payload into #{File.basename(ipa_path)}...")
+    sh("cd #{build_dir.shellescape} && zip -r -q #{ipa_path.shellescape} Payload && rm -rf Payload")
+
+    UI.user_error!("Failed to create IPA") unless File.exist?(ipa_path)
+    size_mb = (File.size(ipa_path).to_f / 1024 / 1024).round(2)
+    pack_duration = (Time.now - pack_start).round(1)
+    total_duration = (Time.now - total_start).round(1)
+
+    UI.message("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+    UI.success("📊 iOS Build Benchmark:")
+    UI.message("  ⏱  Xcode Archive : #{format_duration.call(archive_duration)}") if archive_duration > 0
+    UI.message("  📦 IPA Packaging : #{format_duration.call(pack_duration)}")
+    UI.message("  🏁 Total Time    : #{format_duration.call(total_duration)}")
+    UI.message("  💾 Release IPA   : #{size_mb} MB (#{ipa_path})")
+    UI.message("━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━")
+
+    ipa_path
   end
 
-  desc "Mock / placeholder iOS release lane"
-  lane :release do
-    build
-    UI.message("iOS release lane (placeholder)")
-    UI.success("iOS release completed (mock)!")
+  desc "Build release IPA and distribute to Loadly"
+  lane :loadly do |options|
+    ipa_path = build(options)
+
+    loadly_key = ENV["LOADLY_API_KEY"] || options[:api_key]
+    if loadly_key.to_s.empty?
+      env_file = File.expand_path("../.env", __dir__)
+      loadly_key = File.read(env_file)[/^LOADLY_API_KEY=(.*)$/, 1]&.strip if File.exist?(env_file)
+    end
+    UI.user_error!("LOADLY_API_KEY is not set in .env or environment") if loadly_key.to_s.empty?
+
+    UI.message("Uploading #{ipa_path} to Loadly...")
+    upload_to_loadly(
+      api_key: loadly_key,
+      file: ipa_path
+    )
+    UI.success("Uploaded IPA to Loadly successfully!")
+  end
+
+  desc "Alias for release to Loadly"
+  lane :release do |options|
+    loadly(options)
   end
 end

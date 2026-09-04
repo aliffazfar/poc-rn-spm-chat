@@ -19,6 +19,7 @@ xcuserdata
 DerivedData
 *.hmap
 *.ipa
+*.apk
 *.xcuserstate
 **/.xcode.env.local
 
@@ -52,6 +53,8 @@ yarn-error.log
 **/fastlane/Preview.html
 **/fastlane/screenshots
 **/fastlane/test_output
+**/fastlane/*.ipa
+**/fastlane/*.apk
 
 # Bundle artifact
 *.jsbundle

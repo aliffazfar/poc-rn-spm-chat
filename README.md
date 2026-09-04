@@ -2,13 +2,22 @@
 
 ![Chat preview](assets/preview.webp)
 
-[![Download Android APK](https://img.shields.io/badge/Download_APK-24.45_MB-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://i.loadly.io/77qqPgxf)
+[![Download Android APK](https://img.shields.io/badge/Download_APK-24.45_MB-3DDC84?style=for-the-badge&logo=android&logoColor=white)](https://loadly.io/R8UguLYC)
+[![Download iOS IPA](<https://img.shields.io/badge/iOS_IPA_(Unsigned)-7.57_MB-000000?style=for-the-badge&logo=apple&logoColor=white>)](https://loadly.io/R8UguLYC)
 [![React Native](https://img.shields.io/badge/React_Native-0.87.1-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://reactnative.dev)
 [![SwiftPM](https://img.shields.io/badge/iOS-Swift_Package_Manager-FA7343?style=for-the-badge&logo=swift&logoColor=white)](https://developer.apple.com/swift/)
 
 A React Native chat application testing pure Swift Package Manager (SPM) on iOS with zero CocoaPods dependencies, built ahead of the [December 2, 2026 CocoaPods sunset](https://blog.cocoapods.org/CocoaPods-Specs-Repo/).
 
+Both Android APK and iOS IPA can be downloaded on [Loadly](https://loadly.io/R8UguLYC) (note: the iOS IPA is unsigned, so you can't install it directly).
+
 Powered by the experimental SPM support introduced in [React Native 0.87](https://reactnative.dev/blog/2026/08/11/react-native-0.87).
+
+## Build times and binary size
+
+A clean release archive takes <2 min on Apple Silicon, producing a **7.57 MB** IPA with full Fabric, Hermes, and Nitro Modules included.
+
+Most of the speedup comes from React Native 0.87 shipping core C++ dependencies (`Folly`, `glog`, `boost`) as precompiled XCFrameworks rather than compiling them from source like CocoaPods used to. It is not instantaneous, but compared to 7+ minute clean builds on CocoaPods, it makes iOS archiving much less painful to sit through.
 
 ## Why are there patches?
 
@@ -27,6 +36,16 @@ Eight dependencies are patched via `.yarn/patches`:
 These patches will be removed as upstream maintainers release official SPM support.
 
 I documented notes and workflows from my own trial and error while experimenting with this setup (migrating from CocoaPods, scaffolding `Package.swift` manifests via `npx react-native spm scaffold`, and resolving C++ headers) in [.skills/react-native-spm/SKILL.md](.skills/react-native-spm/SKILL.md) in case it helps anyone testing the same path.
+
+## Features
+
+The app implements the chat requirements backed by the [responserif.dev](https://responserif.dev/) mock API:
+
+- Conversation list with infinite scrolling (`GET /api/users`), avatars, and timestamps.
+- Chat screen (`GET /api/posts`) with bottom message input and optimistic UI updates on send (`POST /api/posts`).
+- Profile screen showing contact details via React Query with a global block and unblock toggle.
+- Settings screen with app version and developer info.
+- Native bottom tabs for switching between chats and settings.
 
 ## Performance stack
 
@@ -59,4 +78,4 @@ Helpful commands:
 - `yarn start:rozenite`: Run Metro with Rozenite devtools enabled.
 - `yarn clean:spm`: Clear SPM build cache.
 - `yarn build:android` / `yarn build:ios`: Compile release builds.
-- `yarn loadly:android`: Build release APK and upload directly to Loadly.
+- `yarn loadly:android` / `yarn loadly:ios`: Build release binaries and upload directly to Loadly.

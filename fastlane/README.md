@@ -49,7 +49,15 @@ Alias for release to Loadly
 [bundle exec] fastlane ios build
 ```
 
-Mock / placeholder iOS build lane
+Archive Xcode project and package into an IPA (Payload folder method)
+
+### ios loadly
+
+```sh
+[bundle exec] fastlane ios loadly
+```
+
+Build release IPA and distribute to Loadly
 
 ### ios release
 
@@ -57,7 +65,7 @@ Mock / placeholder iOS build lane
 [bundle exec] fastlane ios release
 ```
 
-Mock / placeholder iOS release lane
+Alias for release to Loadly
 
 ---
 
