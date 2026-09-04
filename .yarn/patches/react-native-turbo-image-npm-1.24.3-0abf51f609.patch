@@ -3,8 +3,9 @@ new file mode 100644
 index 0000000000000000000000000000000000000000..4ac7528fbe244a22b971d460fb1f3fab229110e9
 --- /dev/null
 +++ b/Package.swift
-@@ -0,0 +1,45 @@
+@@ -0,0 +1,46 @@
 +// swift-tools-version: 5.9
++// Self-managed Swift Package Manager manifest.
 +import PackageDescription
 +
 +let package = Package(
@@ -749,7 +750,7 @@ diff --git a/ios/TurboImageViewManager.swift b/ios/TurboImageViewManager.swift
 index a668ee5fd79d4b65e7a9231d8cb73daf47f56b17..871f8982488a8e6bc853f15317d5f4251a261e4e 100644
 --- a/ios/TurboImageViewManager.swift
 +++ b/ios/TurboImageViewManager.swift
-@@ -1,12 +1,16 @@
+@@ -1,15 +1,20 @@
 +import Foundation
  import Nuke
 +import React
@@ -757,17 +758,23 @@ index a668ee5fd79d4b65e7a9231d8cb73daf47f56b17..871f8982488a8e6bc853f15317d5f425
  
  @objc(TurboImageViewManager)
 +@MainActor
- class TurboImageViewManager: RCTViewManager {
++@objcMembers
++public class TurboImageViewManager: RCTViewManager {
+-class TurboImageViewManager: RCTViewManager {
  
    private var prefetchers: [String: ImagePrefetcher] = [:]
  
 -  override func view() -> (TurboImageView) {
 -    return TurboImageView()
-+  nonisolated override func view() -> TurboImageView {
++  public nonisolated override func view() -> UIView {
 +    MainActor.assumeIsolated { TurboImageView() }
    }
  
-   @objc override static func requiresMainQueueSetup() -> Bool {
+-  @objc override static func requiresMainQueueSetup() -> Bool {
++  public override static func requiresMainQueueSetup() -> Bool {
+     return true
+   }
+ }
 diff --git a/ios/react-native-spm-prefix.h b/ios/react-native-spm-prefix.h
 new file mode 100644
 index 0000000000000000000000000000000000000000..baebbb73fd696a182b883bced85a39f793633a2e
